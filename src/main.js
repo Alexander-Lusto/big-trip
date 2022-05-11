@@ -332,4 +332,37 @@ const getTripDay = () => {
   `);
 }
 
+// Отрисовка
+const render = (container, template, place = `beforeend`) => {
+  container.insertAdjacentHTML(place, template);
+}
+
+const tripMain = document.querySelector(`.trip-main`);
+const tripMainControls = tripMain.querySelector(`.trip-main__trip-controls`);
+
+render(tripMainControls, getTripInfo(), `beforebegin`);
+
+const tripMainInfo = tripMain.querySelector(`.trip-main__trip-info`);
+render(tripMainInfo, getTripCost());
+
+
+const tripMainControlsTitle = tripMain.querySelectorAll(`.trip-main__trip-controls h2`)[1];
+
+render(tripMainControlsTitle, getMenu(), `beforebegin`);
+render(tripMainControls, getFilters());
+
+const tripEvents = document.querySelector(`.trip-events`);
+render(tripEvents, getSorting());
+render(tripEvents, getEditForm());
+render(tripEvents, getTripDays());
+
+const tripDays = tripEvents.querySelector(`.trip-days`);
+render(tripDays, getTripDay());
+
+const eventsList = tripEvents.querySelector(`.trip-events__list`);
+const EVENTS_COUNT = 3;
+
+for (let i = 0; i < EVENTS_COUNT; i++) {
+  render(eventsList, getEvent());
+}
 
