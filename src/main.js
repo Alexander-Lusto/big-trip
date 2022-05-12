@@ -365,4 +365,3 @@ const EVENTS_COUNT = 3;
 for (let i = 0; i < EVENTS_COUNT; i++) {
   render(eventsList, getEvent());
 }
-
