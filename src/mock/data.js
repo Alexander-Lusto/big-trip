@@ -16,5 +16,4 @@ const cities = [
   `Geneva`,
 ];
 
-
 export {transferTypes, activityTypes, types, cities};

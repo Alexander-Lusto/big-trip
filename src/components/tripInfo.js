@@ -1,5 +1,5 @@
 // информация о маршруте
-export const getTripInfo = () => {
+export const createTripInfoTemplate = () => {
   return (`
     <section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">

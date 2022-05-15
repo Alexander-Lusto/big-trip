@@ -18,7 +18,7 @@ const DEFAULT_DATE = {
   minute: new Date().getMinutes() < 10 ? `0` + new Date().getMinutes() : new Date().getMinutes(),
 };
 
-export const getEditForm = (point) => {
+export const createEditFormTemplate = (point) => {
   const type = point ? point.type : DEFAULT_TYPE;
   const destination = point ? point.destination : ``;
   const offers = point ? point.offers : offersByType.find((el) => el.type === DEFAULT_TYPE).offers;
@@ -52,12 +52,12 @@ export const getEditForm = (point) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
-              ${transferTypes.map((el) => getTypeMarkup(el, el === type)).join(`\n`)}
+              ${transferTypes.map((el) => createTypeMarkup(el, el === type)).join(`\n`)}
             </fieldset>
 
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
-              ${activityTypes.map((el) => getTypeMarkup(el, el === type)).join(`\n`)}
+              ${activityTypes.map((el) => createTypeMarkup(el, el === type)).join(`\n`)}
             </fieldset>
           </div>
         </div>
@@ -70,7 +70,7 @@ export const getEditForm = (point) => {
             value="${destination ? destination.name : ``}" list="destination-list-1"
           >
           <datalist id="destination-list-1">
-            ${cities.map((el) => getDestinationOptionMarkup(el)).join(`\n`)}
+            ${cities.map((el) => createDestinationOptionMarkup(el)).join(`\n`)}
           </datalist>
         </div>
 
@@ -106,7 +106,7 @@ export const getEditForm = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${offers.map((el) => getOfferMarkup(el)).join(`\n`)}
+            ${offers.map((el) => createOfferMarkup(el)).join(`\n`)}
           </div>
         </section>
         ${ destination ? (`
@@ -118,7 +118,7 @@ export const getEditForm = (point) => {
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${destination.pictures.map((el) => getDestinationPhotoMarkup(el)).join(`\n`)}
+              ${destination.pictures.map((el) => createDestinationPhotoMarkup(el)).join(`\n`)}
             </div>
           </div>
         </section>
@@ -128,7 +128,7 @@ export const getEditForm = (point) => {
   `);
 };
 
-const getTypeMarkup = (type, isChecked) => {
+const createTypeMarkup = (type, isChecked) => {
   return (`
     <div class="event__type-item">
       <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isChecked ? `checked` : ``}>
@@ -137,11 +137,11 @@ const getTypeMarkup = (type, isChecked) => {
   `);
 };
 
-const getDestinationOptionMarkup = (city) => {
+const createDestinationOptionMarkup = (city) => {
   return `<option value="${city}"></option>`;
 };
 
-const getOfferMarkup = (offer, isChecked) => {
+const createOfferMarkup = (offer, isChecked) => {
   const array = offer.title.split(` `);
   const id = array.length > 3 ? array.slice(array.length - 2).join(` `) : array[array.length - 1];
   return (`
@@ -156,7 +156,7 @@ const getOfferMarkup = (offer, isChecked) => {
   `);
 };
 
-const getDestinationPhotoMarkup = (picture) => {
+const createDestinationPhotoMarkup = (picture) => {
   return (`
     <img class="event__photo" src="${picture.src}" alt="${picture.description}">
   `);

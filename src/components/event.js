@@ -9,7 +9,7 @@ const Preposition = {
 
 const SHOWNING_OFFERS_COUNT = 3;
 
-export const getEvent = (point) => {
+export const createEventTemplate = (point) => {
   const {type, destination, price, offers} = point;
 
   const dateTo = {
@@ -66,7 +66,7 @@ export const getEvent = (point) => {
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${offers.slice(0, SHOWNING_OFFERS_COUNT).map((offer) => generateOfferMarkup(offer)).join(`\n`)}
+          ${offers.slice(0, SHOWNING_OFFERS_COUNT).map((offer) => createOfferMarkup(offer)).join(`\n`)}
         </ul>
 
         <button class="event__rollup-btn" type="button">
@@ -77,7 +77,7 @@ export const getEvent = (point) => {
   `);
 };
 
-const generateOfferMarkup = (offer) => {
+const createOfferMarkup = (offer) => {
   return (`
     <li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
