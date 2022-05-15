@@ -1,9 +1,13 @@
 // точка маршрута
-const types = [`Check-in`, `Sightseeing`, `Restaurant`];
+import {activityTypes} from "../mock/data";
+import {upperCaseFirstLetter} from "../utils";
+
 const Preposition = {
   TO: `to`,
   IN: `in`,
 };
+
+const SHOWNING_OFFERS_COUNT = 3;
 
 export const getEvent = (point) => {
   const {type, destination, price, offers} = point;
@@ -39,7 +43,7 @@ export const getEvent = (point) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${types.some((el) => el === type) ? Preposition.IN : Preposition.TO} ${destination}</h3>
+        <h3 class="event__title">${upperCaseFirstLetter(type)} ${activityTypes.some((el) => el === type) ? Preposition.IN : Preposition.TO} ${destination.name}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -62,7 +66,7 @@ export const getEvent = (point) => {
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${offers.map((offer) => generateOfferMarkup(offer)).join(`\n`)}
+          ${offers.slice(0, SHOWNING_OFFERS_COUNT).map((offer) => generateOfferMarkup(offer)).join(`\n`)}
         </ul>
 
         <button class="event__rollup-btn" type="button">
