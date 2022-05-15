@@ -7,6 +7,7 @@ import {getEditForm} from "./components/editForm";
 import {getEvent} from "./components/event";
 import {getTripDays} from "./components/tripDays";
 import {getTripDay} from "./components/tripDay";
+import {generatePoints} from "./mock/generatePoint";
 
 // Отрисовка
 const render = (container, template, place = `beforeend`) => {
@@ -34,8 +35,9 @@ const tripDays = tripEvents.querySelector(`.trip-days`);
 render(tripDays, getTripDay());
 
 const eventsList = tripEvents.querySelector(`.trip-events__list`);
-const EVENTS_COUNT = 3;
+const EVENTS_COUNT = 20;
+const points = generatePoints(EVENTS_COUNT);
 
 for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(eventsList, getEvent());
+  render(eventsList, getEvent(points[i]));
 }
