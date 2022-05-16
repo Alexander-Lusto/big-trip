@@ -1,33 +1,72 @@
 // точка маршрута
-export const getEvent = () => {
+import {activityTypes} from "../mock/data";
+import {upperCaseFirstLetter} from "../utils";
+
+const Preposition = {
+  TO: `to`,
+  IN: `in`,
+};
+
+const SHOWNING_OFFERS_COUNT = 3;
+
+export const createEventTemplate = (point) => {
+  const {type, destination, price, offers} = point;
+
+  const dateFrom = {
+    year: point.dateFrom.getFullYear(),
+    month: point.dateFrom.getMonth() < 10 ? `0` + point.dateFrom.getMonth() : point.dateFrom.getMonth(),
+    date: point.dateFrom.getDate() < 10 ? `0` + point.dateFrom.getDate() : point.dateFrom.getDate(),
+    hour: point.dateFrom.getHours() < 10 ? `0` + point.dateFrom.getHours() : point.dateFrom.getHours(),
+    minute: point.dateFrom.getMinutes() < 10 ? `0` + point.dateFrom.getMinutes() : point.dateFrom.getMinutes(),
+  };
+
+  const dateTo = {
+    year: point.dateTo.getFullYear(),
+    month: point.dateTo.getMonth() < 10 ? `0` + point.dateTo.getMonth() : point.dateTo.getMonth(),
+    date: point.dateTo.getDate() < 10 ? `0` + point.dateTo.getDate() : point.dateTo.getDate(),
+    hour: point.dateTo.getHours() < 10 ? `0` + point.dateTo.getHours() : point.dateTo.getHours(),
+    minute: point.dateTo.getMinutes() < 10 ? `0` + point.dateTo.getMinutes() : point.dateTo.getMinutes(),
+  };
+
+  const durationMinutes = Math.floor((point.dateTo.getTime() - point.dateFrom.getTime()) / 1000 / 60 % 60);
+  const durationHours = Math.floor((point.dateTo.getTime() - point.dateFrom.getTime()) / 1000 / 60 / 60 % 24);
+  const durationDays = Math.floor((point.dateTo.getTime() - point.dateFrom.getTime()) / 1000 / 60 / 60 / 24);
+
+  let duration = ``;
+  duration += durationDays ? `${durationDays}D ` : ``;
+  duration += durationHours ? `${durationHours}H ` : ``;
+  duration += `${durationMinutes}M`;
+
   return (`
     <li class="trip-events__item">
       <div class="event">
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">Taxi to Amsterdam</h3>
+        <h3 class="event__title">${upperCaseFirstLetter(type)} ${activityTypes.some((el) => el === type) ? Preposition.IN : Preposition.TO} ${destination.name}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+            <time class="event__start-time" datetime="${dateFrom.year}-${dateFrom.month}-${dateFrom.date}T${dateFrom.hour}:${dateFrom.minute}">
+              ${dateFrom.hour}:${dateFrom.minute}
+            </time>
             &mdash;
-            <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+            <time class="event__end-time" datetime="${dateTo.year}-${dateTo.month}-${dateTo.date}T${dateTo.hour}:${dateTo.minute}">
+              ${dateTo.hour}:${dateTo.minute}
+            </time>
           </p>
-          <p class="event__duration">30M</p>
+          <p class="event__duration">
+            ${duration}
+          </p>
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">20</span>
+          &euro;&nbsp;<span class="event__price-value">${price}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          <li class="event__offer">
-            <span class="event__offer-title">Order Uber</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">20</span>
-          </li>
+          ${offers.slice(0, SHOWNING_OFFERS_COUNT).map((offer) => createOfferMarkup(offer)).join(`\n`)}
         </ul>
 
         <button class="event__rollup-btn" type="button">
@@ -37,3 +76,15 @@ export const getEvent = () => {
     </li>
   `);
 };
+
+const createOfferMarkup = (offer) => {
+  return (`
+    <li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;
+      &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
+    </li>
+  `);
+};
+
+
