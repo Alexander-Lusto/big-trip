@@ -4,11 +4,15 @@ import {destinations} from "./destinations";
 import {offersByType} from "./offers";
 import {getRandomArrayItem, getRandomIntegerNumber, getRandomDate} from "../utils";
 
+let previousDate = null;
+
 // Data-generation
 const generatePoint = () => {
-  const dateFrom = getRandomDate();
-  const dateTo = getRandomDate(dateFrom, dateFrom + 3, dateFrom);
+  const dateFrom = previousDate ? getRandomDate(previousDate) : getRandomDate();
+  const dateTo = getRandomDate(dateFrom);
+  previousDate = dateTo;
   const type = getRandomArrayItem(types);
+
   return {
     price: getRandomIntegerNumber(20, 600),
     dateFrom,

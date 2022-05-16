@@ -33,9 +33,16 @@ render(tripEvents, createSortingTemplate());
 render(tripEvents, createEditFormTemplate());
 render(tripEvents, createTripDaysTemplate(points));
 
-const eventsList = tripEvents.querySelector(`.trip-events__list`);
-console.log(points);
+const eventsList = tripEvents.querySelectorAll(`.trip-events__list`);
 
+let j = 0;
 for (let i = 0; i < EVENTS_COUNT; i++) {
-  render(eventsList, createEventTemplate(points[i]));
+  if (i === 0) { // всегда рендерим первый элемент в первый день
+    render(eventsList[0], createEventTemplate(points[0]));
+  } else if (points[i].dateFrom.getDate() > points[i - 1].dateFrom.getDate()) { // если (дата элемента > даты предыдущего элемента) рендерим в другой день
+    j++;
+    render(eventsList[j], createEventTemplate(points[i]));
+  } else { // иначе рендерим в этот же день
+    render(eventsList[j], createEventTemplate(points[i]));
+  }
 }

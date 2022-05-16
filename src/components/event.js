@@ -1,6 +1,6 @@
 // точка маршрута
-import {activityTypes} from "../mock/data";
-import {upperCaseFirstLetter} from "../utils";
+import { activityTypes } from "../mock/data";
+import { upperCaseFirstLetter } from "../utils";
 
 const Preposition = {
   TO: `to`,
@@ -12,20 +12,20 @@ const SHOWNING_OFFERS_COUNT = 3;
 export const createEventTemplate = (point) => {
   const {type, destination, price, offers} = point;
 
-  const dateTo = {
-    year: point.dateTo.getFullYear(),
-    month: point.dateTo.getMonth() < 10 ? `0` + point.dateTo.getMonth() : point.dateTo.getMonth(),
-    date: point.dateTo.getDate() < 10 ? `0` + point.dateTo.getDate() : point.dateTo.getDate(),
-    hour: point.dateTo.getHours() < 10 ? `0` + point.dateTo.getHours() : point.dateTo.getHours(),
-    minute: point.dateTo.getMinutes() < 10 ? `0` + point.dateTo.getMinutes() : point.dateTo.getMinutes(),
-  };
-
   const dateFrom = {
     year: point.dateFrom.getFullYear(),
     month: point.dateFrom.getMonth() < 10 ? `0` + point.dateFrom.getMonth() : point.dateFrom.getMonth(),
     date: point.dateFrom.getDate() < 10 ? `0` + point.dateFrom.getDate() : point.dateFrom.getDate(),
     hour: point.dateFrom.getHours() < 10 ? `0` + point.dateFrom.getHours() : point.dateFrom.getHours(),
     minute: point.dateFrom.getMinutes() < 10 ? `0` + point.dateFrom.getMinutes() : point.dateFrom.getMinutes(),
+  };
+
+  const dateTo = {
+    year: point.dateTo.getFullYear(),
+    month: point.dateTo.getMonth() < 10 ? `0` + point.dateTo.getMonth() : point.dateTo.getMonth(),
+    date: point.dateTo.getDate() < 10 ? `0` + point.dateTo.getDate() : point.dateTo.getDate(),
+    hour: point.dateTo.getHours() < 10 ? `0` + point.dateTo.getHours() : point.dateTo.getHours(),
+    minute: point.dateTo.getMinutes() < 10 ? `0` + point.dateTo.getMinutes() : point.dateTo.getMinutes(),
   };
 
   const durationMinutes = Math.floor((point.dateTo.getTime() - point.dateFrom.getTime()) / 1000 / 60 % 60);

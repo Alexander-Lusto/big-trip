@@ -12,7 +12,7 @@ const getRandomIntegerNumber = (min, max) => {
 const getRandomDate = (startDate) => {
   const targetDate = startDate ? new Date(startDate) : new Date();
   const duration = {
-    days: getRandomIntegerNumber(0, 3),
+    days: getRandomIntegerNumber(0, 2),
     hours: getRandomIntegerNumber(0, 24),
     minutes: getRandomIntegerNumber(0, 60),
   };
