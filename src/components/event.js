@@ -1,6 +1,6 @@
 // точка маршрута
-import { activityTypes } from "../mock/data";
-import { upperCaseFirstLetter } from "../utils";
+import {activityTypes} from "../mock/data";
+import {upperCaseFirstLetter} from "../utils";
 
 const Preposition = {
   TO: `to`,

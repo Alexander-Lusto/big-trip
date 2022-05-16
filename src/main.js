@@ -11,6 +11,7 @@ import {generatePoints} from "./mock/generatePoints";
 const EVENTS_COUNT = 20;
 const points = generatePoints(EVENTS_COUNT);
 
+
 // Отрисовка
 const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
@@ -19,10 +20,10 @@ const render = (container, template, place = `beforeend`) => {
 const tripMain = document.querySelector(`.trip-main`);
 const tripMainControls = tripMain.querySelector(`.trip-main__trip-controls`);
 
-render(tripMainControls, createTripInfoTemplate(), `beforebegin`);
+render(tripMainControls, createTripInfoTemplate(points), `beforebegin`);
 
 const tripMainInfo = tripMain.querySelector(`.trip-main__trip-info`);
-render(tripMainInfo, createTripCostTemplate());
+render(tripMainInfo, createTripCostTemplate(points));
 
 const [tripMainControlsFirstTitle, tripMainControlsSecondTitle] = tripMain.querySelectorAll(`.trip-main__trip-controls h2`);
 render(tripMainControlsFirstTitle, createMenuTemplate(), `afterend`);
