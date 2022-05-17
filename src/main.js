@@ -1,16 +1,16 @@
-import TripInfoComponent from "./components/tripInfo";
-import TripCostComponent from "./components/tripCost";
+import TripInfoComponent from "./components/trip-info";
+import TripCostComponent from "./components/trip-cost";
 import MenuComponent from "./components/menu";
 import FilterComponent from "./components/filters";
 import SortingComponent from "./components/sorting";
 import EventEditorComponent from "./components/event-editor";
 import EventComponent from "./components/event";
-import TripDaysComponent from "./components/tripDays";
-import { generatePoints } from "./mock/generatePoints";
+import TripDaysComponent from "./components/trip-days";
+import NoEventsComponent from "./components/no-events";
+import {generatePoints} from "./mock/generatePoints";
 
-const EVENTS_COUNT = 20;
+const EVENTS_COUNT = 0;
 const events = generatePoints(EVENTS_COUNT);
-
 
 // Отрисовка
 const render = (container, template, place = `beforeend`) => {
@@ -56,6 +56,12 @@ const renderEvent = (container, point) => {
 };
 
 const renderBoard = (container, points) => {
+  if (points.length === 0) {
+    const noEventsComponent = new NoEventsComponent();
+    render(container, noEventsComponent.getElement());
+    return;
+  }
+
   const sortingComponent = new SortingComponent();
   render(container, sortingComponent.getElement());
 

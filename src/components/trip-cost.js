@@ -2,7 +2,7 @@ import {createElement} from "../utils";
 
 // стоимость поездки
 const createTripCostTemplate = (points) => {
-  const price = points.reduce((sum, current) => sum + current.price, 0);
+  const price = points ? points.reduce((sum, current) => sum + current.price, 0) : 0;
 
   return (`
     <p class="trip-info__cost">

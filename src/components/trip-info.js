@@ -3,6 +3,11 @@ import {monthes} from "../const";
 import {createElement} from "../utils";
 
 const createTripInfoTemplate = (points) => {
+
+  if (points.length === 0) {
+    return `<section class="trip-main__trip-info  trip-info"></section>`;
+  }
+
   const place = {
     first: points[0].destination.name,
     second: points[1].destination.name,
