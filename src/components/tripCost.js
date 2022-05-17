@@ -1,5 +1,7 @@
+import {createElement} from "../utils";
+
 // стоимость поездки
-export const createTripCostTemplate = (points) => {
+const createTripCostTemplate = (points) => {
   const price = points.reduce((sum, current) => sum + current.price, 0);
 
   return (`
@@ -8,3 +10,26 @@ export const createTripCostTemplate = (points) => {
     </p>
   `);
 };
+
+export default class TripCost {
+  constructor(points) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripCostTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

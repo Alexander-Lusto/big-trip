@@ -27,8 +27,14 @@ const shuffleArray = (array) => {
   return array.sort(() => Math.random() - 0.5);
 };
 
-const upperCaseFirstLetter = (string) => {
+const capitalizeFirstLetter = (string) => {
   return string.slice(0, 1).toUpperCase() + string.slice(1, string.length);
 };
 
-export {getRandomArrayItem, getRandomIntegerNumber, getRandomDate, shuffleArray, upperCaseFirstLetter};
+const createElement = (template) => {
+  const parent = document.createElement(`div`);
+  parent.innerHTML = template.trim();
+  return parent.firstChild;
+};
+
+export {createElement, getRandomArrayItem, getRandomIntegerNumber, getRandomDate, shuffleArray, capitalizeFirstLetter};
