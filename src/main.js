@@ -9,7 +9,7 @@ import TripDaysComponent from "./components/trip-days";
 import NoEventsComponent from "./components/no-events";
 import {generatePoints} from "./mock/generatePoints";
 
-const EVENTS_COUNT = 0;
+const EVENTS_COUNT = 20;
 const events = generatePoints(EVENTS_COUNT);
 
 // Отрисовка
