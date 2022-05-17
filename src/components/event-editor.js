@@ -1,5 +1,5 @@
 // форма создания / редактирования
-import {upperCaseFirstLetter} from "../utils";
+import {capitalizeFirstLetter, createElement} from "../utils";
 import {transferTypes, activityTypes, cities} from "../mock/data";
 import {offersByType} from "../mock/offers";
 
@@ -8,7 +8,6 @@ const Preposition = {
   TO: `to`,
   IN: `in`,
 };
-
 const DEFAULT_TYPE = `flight`;
 const DEFAULT_DATE = {
   year: new Date().getFullYear() >= 2100 ? new Date().getFullYear().toString().slice(1) : new Date().getFullYear().toString().slice(2),
@@ -18,7 +17,7 @@ const DEFAULT_DATE = {
   minute: new Date().getMinutes() < 10 ? `0` + new Date().getMinutes() : new Date().getMinutes(),
 };
 
-export const createEditFormTemplate = (point) => {
+const createEventEditorTemplate = (point) => {
   const type = point ? point.type : DEFAULT_TYPE;
   const destination = point ? point.destination : ``;
   const offers = point ? point.offers : offersByType.find((el) => el.type === DEFAULT_TYPE).offers;
@@ -64,7 +63,7 @@ export const createEditFormTemplate = (point) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${upperCaseFirstLetter(type)} ${activityTypes.some((el) => el === type) ? Preposition.IN : Preposition.TO}
+            ${capitalizeFirstLetter(type)} ${activityTypes.some((el) => el === type) ? Preposition.IN : Preposition.TO}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
             value="${destination ? destination.name : ``}" list="destination-list-1"
@@ -132,7 +131,7 @@ const createTypeMarkup = (type, isChecked) => {
   return (`
     <div class="event__type-item">
       <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isChecked ? `checked` : ``}>
-      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${upperCaseFirstLetter(type)}</label>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
     </div>
   `);
 };
@@ -161,3 +160,26 @@ const createDestinationPhotoMarkup = (picture) => {
     <img class="event__photo" src="${picture.src}" alt="${picture.description}">
   `);
 };
+
+export default class EventEditor {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditorTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,8 +1,8 @@
 // дни
 import {monthes} from "../const";
+import {createElement} from "../utils";
 
-export const createTripDaysTemplate = (points) => {
-
+const createTripDaysTemplate = (points) => {
   const sortedPoints = points.slice().sort((left, rigth) => left.dateFrom - rigth.dateFrom);
   const filteredPoints = sortedPoints.filter((el, i, arr) => {
     if (i === 0) { // всегда возвращаем первый элемент
@@ -20,7 +20,6 @@ export const createTripDaysTemplate = (points) => {
     </ul>
   `);
 };
-
 
 const createTripDayMarkup = (point, day) => {
   const dateFrom = {
@@ -45,4 +44,27 @@ const createTripDayMarkup = (point, day) => {
     </li>
   `);
 };
+
+export default class TripDays {
+  constructor(points) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripDaysTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
 

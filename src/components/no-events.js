@@ -1,22 +1,19 @@
 import {createElement} from "../utils";
 
 // меню
-const createMenuTemplate = () => {
+const createNoEventsTemplate = () => {
   return (`
-    <nav class="trip-controls__trip-tabs  trip-tabs">
-      <a class="trip-tabs__btn" href="#">Table</a>
-      <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">Stats</a>
-    </nav>
+    <p class="trip-events__msg">Click New Event to create your first point</p>
   `);
 };
 
-export default class Menu {
+export default class NoEvents {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createMenuTemplate();
+    return createNoEventsTemplate();
   }
 
   getElement() {

@@ -1,6 +1,6 @@
 // точка маршрута
 import {activityTypes} from "../mock/data";
-import {upperCaseFirstLetter} from "../utils";
+import {capitalizeFirstLetter, createElement} from "../utils";
 
 const Preposition = {
   TO: `to`,
@@ -9,7 +9,7 @@ const Preposition = {
 
 const SHOWNING_OFFERS_COUNT = 3;
 
-export const createEventTemplate = (point) => {
+const createEventTemplate = (point) => {
   const {type, destination, price, offers} = point;
 
   const dateFrom = {
@@ -43,7 +43,7 @@ export const createEventTemplate = (point) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${upperCaseFirstLetter(type)} ${activityTypes.some((el) => el === type) ? Preposition.IN : Preposition.TO} ${destination.name}</h3>
+        <h3 class="event__title">${capitalizeFirstLetter(type)} ${activityTypes.some((el) => el === type) ? Preposition.IN : Preposition.TO} ${destination.name}</h3>
 
         <div class="event__schedule">
           <p class="event__time">
@@ -86,5 +86,28 @@ const createOfferMarkup = (offer) => {
     </li>
   `);
 };
+
+export default class Event {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
 
 

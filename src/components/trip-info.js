@@ -1,7 +1,13 @@
 // информация о маршруте
 import {monthes} from "../const";
+import {createElement} from "../utils";
 
-export const createTripInfoTemplate = (points) => {
+const createTripInfoTemplate = (points) => {
+
+  if (points.length === 0) {
+    return `<section class="trip-main__trip-info  trip-info"></section>`;
+  }
+
   const place = {
     first: points[0].destination.name,
     second: points[1].destination.name,
@@ -36,3 +42,26 @@ export const createTripInfoTemplate = (points) => {
     </section>
   `);
 };
+
+export default class TripInfo {
+  constructor(points) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
