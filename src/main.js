@@ -45,6 +45,7 @@ const renderEvent = (container, point) => {
   const documentEscPressHandler = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       container.replaceChild(event, eventEditor);
+      document.removeEventListener(`keydown`, documentEscPressHandler);
     }
   };
 

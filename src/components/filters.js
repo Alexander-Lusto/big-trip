@@ -1,4 +1,6 @@
+// фильтры
 import {capitalizeFirstLetter, createElement} from "../utils";
+
 const Filter = {
   EVERYTHING: `everything`,
   FUTURE: `future`,
@@ -7,8 +9,6 @@ const Filter = {
 const DEFAULT_FILTER = Filter.EVERYTHING;
 const filters = [Filter.EVERYTHING, Filter.FUTURE, Filter.PAST];
 
-
-// фильтры
 const createFiltersTemplate = () => {
   return (`
     <form class="trip-filters" action="#" method="get">
