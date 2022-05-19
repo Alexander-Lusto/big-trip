@@ -28,4 +28,11 @@ const monthes = [
   Month.DEC,
 ];
 
-export {monthes};
+const SortType = {
+  EVENT: `event`,
+  TIME: `time`,
+  PRICE: `price`,
+};
+const sortTypes = [SortType.EVENT, SortType.TIME, SortType.PRICE];
+
+export {monthes, sortTypes, SortType};

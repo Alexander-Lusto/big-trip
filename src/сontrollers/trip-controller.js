@@ -3,7 +3,8 @@ import EventEditorComponent from "../components/event-editor";
 import EventComponent from "../components/event";
 import TripDaysComponent from "../components/trip-days";
 import NoEventsComponent from "../components/no-events";
-import {render, replace} from "../utils/render";
+import {render, replace, remove} from "../utils/render";
+import {SortType} from "../utils/const";
 
 const EVENTS_COUNT = 20;
 
@@ -56,22 +57,64 @@ export default class TripController {
       return;
     }
 
+    this._sortingComponent.setSortTypeChangeHandler((evt) => {
+      const sortType = evt.target.dataset.sortType;
+      let sortedPoints = points.slice();
+
+      switch (sortType) {
+        case SortType.EVENT: {
+          this.renderDays(sortedPoints);
+          this.renderEvents(sortedPoints);
+          break;
+        }
+
+        case SortType.PRICE: {
+          sortedPoints = sortedPoints.sort((a, b) => b.price - a.price);
+          this.renderDays();
+          this.renderEvents(sortedPoints);
+          break;
+        }
+
+        case SortType.TIME: {
+          sortedPoints = sortedPoints.sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
+          this.renderDays();
+          this.renderEvents(sortedPoints);
+          break;
+        }
+      }
+      this._sortingComponent.sortType = sortType;
+    });
     render(container, this._sortingComponent);
 
-    this._tripDaysComponent = new TripDaysComponent(points);
-    render(container, this._tripDaysComponent);
+    this.renderDays(points);
+    this.renderEvents(points);
+  }
 
-    const eventsList = container.querySelectorAll(`.trip-events__list`);
+  renderDays(points) {
+    if (this._tripDaysComponent) {
+      remove(this._tripDaysComponent);
+    }
+    this._tripDaysComponent = new TripDaysComponent(points);
+    render(this._container, this._tripDaysComponent);
+  }
+
+  renderEvents(points) {
+    const days = this._tripDaysComponent.getElement().querySelectorAll(`.trip-events__list`);
+
+    if (days.length === 1) { // если у нас один день (режим сортировки) то рендерим всё в него
+      points.forEach((el) => renderEvent(days[0], el));
+      return;
+    }
 
     let j = 0;
     for (let i = 0; i < EVENTS_COUNT; i++) {
       if (i === 0) { // всегда рендерим первый элемент в первый день
-        renderEvent(eventsList[0], points[0]);
+        renderEvent(days[0], points[0]);
       } else if (points[i].dateFrom.getDate() > points[i - 1].dateFrom.getDate()) { // если (дата элемента > даты предыдущего элемента) рендерим в другой день
         j++;
-        renderEvent(eventsList[j], points[i]);
+        renderEvent(days[j], points[i]);
       } else { // иначе рендерим в этот же день
-        renderEvent(eventsList[j], points[i]);
+        renderEvent(days[j], points[i]);
       }
     }
   }

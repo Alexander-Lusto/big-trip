@@ -1,5 +1,5 @@
 // информация о маршруте
-import {monthes} from "../const";
+import {monthes} from "../utils/const";
 import AbstractComponent from "./abstract-component.js";
 
 const createTripInfoTemplate = (points) => {

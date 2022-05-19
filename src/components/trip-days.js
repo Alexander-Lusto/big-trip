@@ -1,8 +1,20 @@
 // дни
-import {monthes} from "../const";
+import {monthes} from "../utils/const";
 import AbstractComponent from "./abstract-component.js";
 
 const createTripDaysTemplate = (points) => {
+  if (!points) {
+    return (`
+      <ul class="trip-days">
+        <li class="trip-days__item  day">
+          <div class="day__info">
+          </div>
+          <ul class="trip-events__list"></ul>
+        </li>
+      </ul>
+    `);
+  }
+
   const sortedPoints = points.slice().sort((left, rigth) => left.dateFrom - rigth.dateFrom);
   const filteredPoints = sortedPoints.filter((el, i, arr) => {
     if (i === 0) { // всегда возвращаем первый элемент
