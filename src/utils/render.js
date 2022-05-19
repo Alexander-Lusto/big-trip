@@ -16,6 +16,6 @@ export const replace = (newComponent, oldComponent) => {
 
   const isExistElements = !!(parentElement && newElement && oldElement);
   if (isExistElements && parentElement.contains(oldElement)) {
-    parentElement.replace(newElement, oldElement);
+    parentElement.replaceChild(newElement, oldElement);
   }
 };

@@ -16,13 +16,7 @@ const events = generatePoints(EVENTS_COUNT);
 // Отрисовка
 const renderEvent = (container, point) => {
   const eventComponent = new EventComponent(point);
-  const event = eventComponent.getElement();
-  const rollupButton = event.querySelector(`.event__rollup-btn`);
-
   const eventEditorComponent = new EventEditorComponent(point);
-  const eventEditor = eventEditorComponent.getElement();
-  const eventResetButton = eventEditor.querySelector(`.event__reset-btn`);
-  const eventSaveButton = eventEditor.querySelector(`.event__save-btn`);
 
   const rollupButtonClickHandler = () => {
     replace(eventEditorComponent, eventComponent);
@@ -46,9 +40,9 @@ const renderEvent = (container, point) => {
     }
   };
 
-  rollupButton.addEventListener(`click`, rollupButtonClickHandler);
-  eventResetButton.addEventListener(`click`, eventResetButtonClickHandler);
-  eventSaveButton.addEventListener(`click`, eventSaveButtonClickHandler);
+  eventComponent.setRollupButtonClickHandler(rollupButtonClickHandler);
+  eventEditorComponent.setSaveButtonClickHandler(eventResetButtonClickHandler);
+  eventEditorComponent.setResetButtonClickHandler(eventSaveButtonClickHandler);
 
   render(container, eventComponent);
 };
