@@ -13,8 +13,20 @@ const EVENTS_COUNT = 20;
 const events = generatePoints(EVENTS_COUNT);
 
 // Отрисовка
-const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentElement(place, template);
+const render = (container, component, place = `beforeend`) => {
+  const element = component.getElement();
+  container.insertAdjacentElement(place, element);
+};
+
+const replace = (newComponent, oldComponent) => {
+  const newElement = newComponent.getElement();
+  const oldElement = oldComponent.getElement();
+  const parentElement = oldComponent.getElement().parentElement;
+
+  const isExistElements = !!(parentElement && newElement && oldElement);
+  if (isExistElements && parentElement.contains(oldElement)) {
+    parentElement.replace(newElement, oldElement);
+  }
 };
 
 const renderEvent = (container, point) => {
@@ -28,23 +40,23 @@ const renderEvent = (container, point) => {
   const eventSaveButton = eventEditor.querySelector(`.event__save-btn`);
 
   const rollupButtonClickHandler = () => {
-    container.replaceChild(eventEditor, event);
+    replace(eventEditorComponent, eventComponent);
     document.addEventListener(`keydown`, documentEscPressHandler);
   };
 
   const eventResetButtonClickHandler = () => {
-    container.replaceChild(event, eventEditor);
+    replace(eventComponent, eventEditorComponent);
     document.removeEventListener(`keydown`, documentEscPressHandler);
   };
 
   const eventSaveButtonClickHandler = () => {
-    container.replaceChild(event, eventEditor);
+    replace(eventComponent, eventEditorComponent);
     document.removeEventListener(`keydown`, documentEscPressHandler);
   };
 
   const documentEscPressHandler = (evt) => {
     if (evt.key === `Escape` || evt.key === `Esc`) {
-      container.replaceChild(event, eventEditor);
+      replace(eventComponent, eventEditorComponent);
       document.removeEventListener(`keydown`, documentEscPressHandler);
     }
   };
@@ -53,21 +65,21 @@ const renderEvent = (container, point) => {
   eventResetButton.addEventListener(`click`, eventResetButtonClickHandler);
   eventSaveButton.addEventListener(`click`, eventSaveButtonClickHandler);
 
-  render(container, event);
+  render(container, eventComponent);
 };
 
-const renderBoard = (container, points) => {
+const renderTrip = (container, points) => {
   if (points.length === 0) {
     const noEventsComponent = new NoEventsComponent();
-    render(container, noEventsComponent.getElement());
+    render(container, noEventsComponent);
     return;
   }
 
   const sortingComponent = new SortingComponent();
-  render(container, sortingComponent.getElement());
+  render(container, sortingComponent);
 
   const tripDaysComponent = new TripDaysComponent(points);
-  render(container, tripDaysComponent.getElement());
+  render(container, tripDaysComponent);
 
   const eventsList = container.querySelectorAll(`.trip-events__list`);
 
@@ -87,19 +99,19 @@ const renderBoard = (container, points) => {
 const tripMain = document.querySelector(`.trip-main`);
 const tripInfoComponent = new TripInfoComponent(events);
 const tripMainControls = tripMain.querySelector(`.trip-main__trip-controls`);
-render(tripMainControls, tripInfoComponent.getElement(), `beforebegin`);
+render(tripMainControls, tripInfoComponent, `beforebegin`);
 
 const tripCostComponent = new TripCostComponent(events);
 const tripMainInfo = tripMain.querySelector(`.trip-main__trip-info`);
-render(tripMainInfo, tripCostComponent.getElement());
+render(tripMainInfo, tripCostComponent);
 
 
 const menuComponent = new MenuComponent();
 const filterComponent = new FilterComponent();
 const [tripMainControlsFirstTitle, tripMainControlsSecondTitle] = tripMain.querySelectorAll(`.trip-main__trip-controls h2`);
-render(tripMainControlsFirstTitle, menuComponent.getElement(), `afterend`);
-render(tripMainControlsSecondTitle, filterComponent.getElement(), `afterend`);
+render(tripMainControlsFirstTitle, menuComponent, `afterend`);
+render(tripMainControlsSecondTitle, filterComponent, `afterend`);
 
 const tripEvents = document.querySelector(`.trip-events`);
 
-renderBoard(tripEvents, events);
+renderTrip(tripEvents, events);
