@@ -1,5 +1,5 @@
 // форма создания / редактирования
-import {capitalizeFirstLetter} from "../utils";
+import {capitalizeFirstLetter} from "../utils/common";
 import {transferTypes, activityTypes, cities} from "../mock/data";
 import {offersByType} from "../mock/offers";
 import AbstractComponent from "./abstract-component.js";

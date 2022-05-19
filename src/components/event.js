@@ -1,6 +1,6 @@
 // точка маршрута
 import {activityTypes} from "../mock/data";
-import {capitalizeFirstLetter} from "../utils";
+import {capitalizeFirstLetter} from "../utils/common";
 import AbstractComponent from "./abstract-component.js";
 
 const Preposition = {

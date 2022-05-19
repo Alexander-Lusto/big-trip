@@ -8,27 +8,12 @@ import EventComponent from "./components/event";
 import TripDaysComponent from "./components/trip-days";
 import NoEventsComponent from "./components/no-events";
 import {generatePoints} from "./mock/generatePoints";
+import {render, replace} from "./utils/render";
 
 const EVENTS_COUNT = 20;
 const events = generatePoints(EVENTS_COUNT);
 
 // Отрисовка
-const render = (container, component, place = `beforeend`) => {
-  const element = component.getElement();
-  container.insertAdjacentElement(place, element);
-};
-
-const replace = (newComponent, oldComponent) => {
-  const newElement = newComponent.getElement();
-  const oldElement = oldComponent.getElement();
-  const parentElement = oldComponent.getElement().parentElement;
-
-  const isExistElements = !!(parentElement && newElement && oldElement);
-  if (isExistElements && parentElement.contains(oldElement)) {
-    parentElement.replace(newElement, oldElement);
-  }
-};
-
 const renderEvent = (container, point) => {
   const eventComponent = new EventComponent(point);
   const event = eventComponent.getElement();

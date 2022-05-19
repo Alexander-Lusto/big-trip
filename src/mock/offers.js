@@ -1,5 +1,5 @@
 //
-import {shuffleArray, getRandomIntegerNumber} from "../utils";
+import {shuffleArray, getRandomIntegerNumber} from "../utils/common";
 import {types} from "./data";
 
 

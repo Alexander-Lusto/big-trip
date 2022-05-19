@@ -1,4 +1,4 @@
-import {getRandomIntegerNumber, getRandomArrayItem, shuffleArray} from "../utils";
+import {getRandomIntegerNumber, getRandomArrayItem, shuffleArray} from "../utils/common";
 import {cities} from "./data";
 
 const descriptions = [
