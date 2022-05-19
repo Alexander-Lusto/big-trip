@@ -1,8 +1,8 @@
 // форма создания / редактирования
-import {capitalizeFirstLetter, createElement} from "../utils";
+import {capitalizeFirstLetter} from "../utils/common";
 import {transferTypes, activityTypes, cities} from "../mock/data";
 import {offersByType} from "../mock/offers";
-
+import AbstractComponent from "./abstract-component.js";
 
 const Preposition = {
   TO: `to`,
@@ -161,25 +161,21 @@ const createDestinationPhotoMarkup = (picture) => {
   `);
 };
 
-export default class EventEditor {
+export default class EventEditor extends AbstractComponent {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventEditorTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setSaveButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__save-btn`).addEventListener(`click`, cb);
   }
 
-  removeElement() {
-    this._element = null;
+  setResetButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb);
   }
 }

@@ -31,10 +31,4 @@ const capitalizeFirstLetter = (string) => {
   return string.slice(0, 1).toUpperCase() + string.slice(1, string.length);
 };
 
-const createElement = (template) => {
-  const parent = document.createElement(`div`);
-  parent.innerHTML = template.trim();
-  return parent.firstChild;
-};
-
-export {createElement, getRandomArrayItem, getRandomIntegerNumber, getRandomDate, shuffleArray, capitalizeFirstLetter};
+export {getRandomArrayItem, getRandomIntegerNumber, getRandomDate, shuffleArray, capitalizeFirstLetter};

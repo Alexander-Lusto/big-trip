@@ -2,7 +2,7 @@
 import {types} from "./data";
 import {destinations} from "./destinations";
 import {offersByType} from "./offers";
-import {getRandomArrayItem, getRandomIntegerNumber, getRandomDate} from "../utils";
+import {getRandomArrayItem, getRandomIntegerNumber, getRandomDate} from "../utils/common";
 
 let previousDate = null;
 

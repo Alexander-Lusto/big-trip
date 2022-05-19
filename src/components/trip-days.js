@@ -1,6 +1,6 @@
 // дни
 import {monthes} from "../const";
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract-component.js";
 
 const createTripDaysTemplate = (points) => {
   const sortedPoints = points.slice().sort((left, rigth) => left.dateFrom - rigth.dateFrom);
@@ -45,26 +45,14 @@ const createTripDayMarkup = (point, day) => {
   `);
 };
 
-export default class TripDays {
+export default class TripDays extends AbstractComponent {
   constructor(points) {
+    super();
     this._points = points;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripDaysTemplate(this._points);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

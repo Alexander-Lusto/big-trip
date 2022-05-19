@@ -1,6 +1,7 @@
 // точка маршрута
 import {activityTypes} from "../mock/data";
-import {capitalizeFirstLetter, createElement} from "../utils";
+import {capitalizeFirstLetter} from "../utils/common";
+import AbstractComponent from "./abstract-component.js";
 
 const Preposition = {
   TO: `to`,
@@ -87,26 +88,18 @@ const createOfferMarkup = (offer) => {
   `);
 };
 
-export default class Event {
+export default class Event extends AbstractComponent {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setRollupButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
   }
 }
 

@@ -1,6 +1,6 @@
 // информация о маршруте
 import {monthes} from "../const";
-import {createElement} from "../utils";
+import AbstractComponent from "./abstract-component.js";
 
 const createTripInfoTemplate = (points) => {
 
@@ -43,25 +43,13 @@ const createTripInfoTemplate = (points) => {
   `);
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractComponent {
   constructor(points) {
+    super();
     this._points = points;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._points);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

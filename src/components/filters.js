@@ -1,5 +1,6 @@
 // фильтры
-import {capitalizeFirstLetter, createElement} from "../utils";
+import {capitalizeFirstLetter} from "../utils/common";
+import AbstractComponent from "./abstract-component.js";
 
 const Filter = {
   EVERYTHING: `everything`,
@@ -27,24 +28,8 @@ const createFilterMarkup = (filterName, isChecked) => {
   `);
 };
 
-export default class Filters {
-  constructor() {
-    this._element = null;
-  }
-
+export default class Filters extends AbstractComponent {
   getTemplate() {
     return createFiltersTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
