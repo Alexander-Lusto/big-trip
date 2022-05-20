@@ -195,4 +195,8 @@ export default class EventEditor extends AbstractComponent {
   setRollupButtonClickHandler(cb) {
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
   }
+
+  setAddToFavoriteButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, cb);
+  }
 }

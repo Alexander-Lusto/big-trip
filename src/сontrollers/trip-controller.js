@@ -15,10 +15,13 @@ export default class TripController {
     this._sortingComponent = new SortingComponent();
     this._tripDaysComponent = null;
     this._eventControllers = [];
+    this._onDataChange = this._onDataChange.bind(this);
   }
 
   render(points) {
     const container = this._container;
+    this._points = points;
+
     if (points.length === 0) {
       render(container, this._noEventsComponent);
       return;
@@ -66,7 +69,7 @@ export default class TripController {
   }
 
   renderEvent(container, point) {
-    const eventController = new EventController(container);
+    const eventController = new EventController(container, this._onDataChange);
     this._eventControllers.push(eventController);
     eventController.render(point);
   }
@@ -93,6 +96,17 @@ export default class TripController {
         this.renderEvent(days[j], points[i]);
       }
     }
+  }
+
+  _onDataChange(oldData, newData) {
+    const index = this._points.findIndex((it) => it === oldData);
+    if (index === -1) {
+      return;
+    }
+
+    this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
+    this._eventControllers[index].render(this._points[index]);
+    console.log(newData);
   }
 }
 
