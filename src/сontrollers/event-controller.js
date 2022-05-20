@@ -14,9 +14,14 @@ export default class EventController {
     this._eventComponent = new EventComponent(point);
     this._eventEditorComponent = new EventEditorComponent(point);
 
-    const rollupButtonClickHandler = () => {
+    const eventRollupButtonClickHandler = () => {
       replace(this._eventEditorComponent, this._eventComponent);
       document.addEventListener(`keydown`, documentEscPressHandler);
+    };
+
+    const eventEditorRollupButtonClickHandler = () => {
+      replace(this._eventComponent, this._eventEditorComponent);
+      document.removeEventListener(`keydown`, documentEscPressHandler);
     };
 
     const eventResetButtonClickHandler = () => {
@@ -36,9 +41,10 @@ export default class EventController {
       }
     };
 
-    this._eventComponent.setRollupButtonClickHandler(rollupButtonClickHandler);
+    this._eventComponent.setRollupButtonClickHandler(eventRollupButtonClickHandler);
     this._eventEditorComponent.setSaveButtonClickHandler(eventResetButtonClickHandler);
     this._eventEditorComponent.setResetButtonClickHandler(eventSaveButtonClickHandler);
+    this._eventEditorComponent.setRollupButtonClickHandler(eventEditorRollupButtonClickHandler);
 
     render(this._container, this._eventComponent);
   }

@@ -22,6 +22,7 @@ const createEventEditorTemplate = (point) => {
   const destination = point ? point.destination : ``;
   const offers = point ? point.offers : offersByType.find((el) => el.type === DEFAULT_TYPE).offers;
   const price = point ? point.price : ``;
+  const isFavorite = point ? point.isFavorite : ``;
 
   const dateTo = point ? {
     year: point.dateTo.getFullYear(),
@@ -99,6 +100,18 @@ const createEventEditorTemplate = (point) => {
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Cancel</button>
+        ${point ? (`
+        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
+        <label class="event__favorite-btn" for="event-favorite-1">
+          <span class="visually-hidden">Add to favorite</span>
+          <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+            <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+          </svg>
+        </label>
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+        `) : ``}
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
@@ -108,7 +121,7 @@ const createEventEditorTemplate = (point) => {
             ${offers.map((el) => createOfferMarkup(el)).join(`\n`)}
           </div>
         </section>
-        ${ destination ? (`
+        ${destination ? (`
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">
@@ -177,5 +190,9 @@ export default class EventEditor extends AbstractComponent {
 
   setResetButtonClickHandler(cb) {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb);
+  }
+
+  setRollupButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
   }
 }
