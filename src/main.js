@@ -8,6 +8,7 @@ import TripController from "./сontrollers/trip-controller";
 
 const EVENTS_COUNT = 20;
 const events = generatePoints(EVENTS_COUNT);
+console.log(events);
 
 // Отрисовка
 const tripMain = document.querySelector(`.trip-main`);

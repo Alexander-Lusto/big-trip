@@ -106,7 +106,6 @@ export default class TripController {
 
     this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
     this._eventControllers[index].render(this._points[index]);
-    console.log(newData);
   }
 }
 

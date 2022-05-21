@@ -2,7 +2,7 @@
 import {capitalizeFirstLetter} from "../utils/common";
 import {transferTypes, activityTypes, cities} from "../mock/data";
 import {offersByType} from "../mock/offers";
-import AbstractComponent from "./abstract-component.js";
+import AbstractSmartComponent from "./abstract-component.js";
 
 const Preposition = {
   TO: `to`,
@@ -20,6 +20,7 @@ const DEFAULT_DATE = {
 const createEventEditorTemplate = (point) => {
   const type = point ? point.type : DEFAULT_TYPE;
   const destination = point ? point.destination : ``;
+  const allOffers = offersByType.find((it) => it.type === type).offers;
   const offers = point ? point.offers : offersByType.find((el) => el.type === DEFAULT_TYPE).offers;
   const price = point ? point.price : ``;
   const isFavorite = point ? point.isFavorite : ``;
@@ -118,7 +119,7 @@ const createEventEditorTemplate = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${offers.map((el) => createOfferMarkup(el)).join(`\n`)}
+            ${allOffers.map((offer) => createOfferMarkup(offer, offer === offers.find((checkedOffer) => checkedOffer === offer))).join(`\n`)}
           </div>
         </section>
         ${destination ? (`
@@ -174,7 +175,7 @@ const createDestinationPhotoMarkup = (picture) => {
   `);
 };
 
-export default class EventEditor extends AbstractComponent {
+export default class EventEditor extends AbstractSmartComponent {
   constructor(point) {
     super();
     this._point = point;
@@ -198,5 +199,13 @@ export default class EventEditor extends AbstractComponent {
 
   setAddToFavoriteButtonClickHandler(cb) {
     this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, cb);
+  }
+
+  setEventTypeInputChangeHandler(cb) {
+    this.getElement().querySelectorAll(`.event__type-input`).forEach((el) => el.addEventListener(`change`, cb));
+  }
+
+  setEventDestinationInputChangeHandler(cb) {
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, cb);
   }
 }

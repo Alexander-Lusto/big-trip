@@ -1,6 +1,8 @@
 import EventEditorComponent from "../components/event-editor";
 import EventComponent from "../components/event";
 import {render, replace, remove} from "../utils/render";
+import {offersByType} from "../mock/offers";
+import {destinations} from "../mock/destinations";
 
 export default class EventController {
   constructor(container, onDataChange) {
@@ -54,7 +56,19 @@ export default class EventController {
     };
 
     const addToFavoriteButtonClickHandler = () => {
-      const newPoint = Object.assign({}, point, { isFavorite: !point.isFavorite });
+      const newPoint = Object.assign({}, point, {isFavorite: !point.isFavorite});
+      this._onDataChange(point, newPoint);
+    };
+
+    const eventTypeInputChangeHandler = (evt) => {
+      const type = evt.target.value;
+      const newPoint = Object.assign({}, point, {type, offers: offersByType.find((it) => it.type === type).offers});
+      this._onDataChange(point, newPoint);
+    };
+
+    const eventDestinationInputChangeHandler = (evt) => {
+      const destination = destinations.find((it) => it.name === evt.target.value);
+      const newPoint = Object.assign({}, point, {destination});
       this._onDataChange(point, newPoint);
     };
 
@@ -63,6 +77,8 @@ export default class EventController {
     this._eventEditorComponent.setResetButtonClickHandler(eventSaveButtonClickHandler);
     this._eventEditorComponent.setRollupButtonClickHandler(eventEditorRollupButtonClickHandler);
     this._eventEditorComponent.setAddToFavoriteButtonClickHandler(addToFavoriteButtonClickHandler);
+    this._eventEditorComponent.setEventTypeInputChangeHandler(eventTypeInputChangeHandler);
+    this._eventEditorComponent.setEventDestinationInputChangeHandler(eventDestinationInputChangeHandler);
 
     if (this._editMode === true) {
       render(this._container, this._eventEditorComponent, `afterbegin`);
