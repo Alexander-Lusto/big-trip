@@ -5,8 +5,6 @@ import EventController from "./event-controller";
 import {render, remove} from "../utils/render";
 import {SortType} from "../utils/const";
 
-const EVENTS_COUNT = 20;
-
 export default class TripController {
   constructor(container) {
     this._container = container;
@@ -16,6 +14,7 @@ export default class TripController {
     this._tripDaysComponent = null;
     this._eventControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
   }
 
   render(points) {
@@ -69,13 +68,12 @@ export default class TripController {
   }
 
   renderEvent(container, point) {
-    const eventController = new EventController(container, this._onDataChange);
+    const eventController = new EventController(container, this._onDataChange, this._onViewChange);
     this._eventControllers.push(eventController);
     eventController.render(point);
   }
 
   renderEvents(points) {
-    this._eventControllers = [];
     const days = this._tripDaysComponent.getElement().querySelectorAll(`.trip-events__list`);
 
     if (days.length === 1) { // если у нас один день (режим сортировки) то рендерим всё в него
@@ -86,7 +84,7 @@ export default class TripController {
     }
 
     let j = 0;
-    for (let i = 0; i < EVENTS_COUNT; i++) {
+    for (let i = 0; i < points.length; i++) {
       if (i === 0) { // всегда рендерим первый элемент в первый день
         this.renderEvent(days[0], points[0]);
       } else if (points[i].dateFrom.getDate() > points[i - 1].dateFrom.getDate()) {
@@ -106,6 +104,10 @@ export default class TripController {
 
     this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
     this._eventControllers[index].render(this._points[index]);
+  }
+
+  _onViewChange() {
+    this._eventControllers.forEach((el) => el.setDefaultView());
   }
 }
 

@@ -5,9 +5,10 @@ import {offersByType} from "../mock/offers";
 import {destinations} from "../mock/destinations";
 
 export default class EventController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
+    this._onViewChange = onViewChange;
 
     this._eventComponent = null;
     this._eventEditorComponent = null;
@@ -26,6 +27,7 @@ export default class EventController {
     const eventRollupButtonClickHandler = () => {
       replace(this._eventEditorComponent, this._eventComponent);
       document.addEventListener(`keydown`, documentEscPressHandler);
+      this._onViewChange();
       this._editMode = true;
     };
 
@@ -84,6 +86,13 @@ export default class EventController {
       render(this._container, this._eventEditorComponent, `afterbegin`);
     } else {
       render(this._container, this._eventComponent);
+    }
+  }
+
+  setDefaultView() {
+    if (this._editMode) {
+      replace(this._eventComponent, this._eventEditorComponent);
+      this._editMode = false;
     }
   }
 }

@@ -2,7 +2,7 @@
 import {capitalizeFirstLetter} from "../utils/common";
 import {transferTypes, activityTypes, cities} from "../mock/data";
 import {offersByType} from "../mock/offers";
-import AbstractSmartComponent from "./abstract-component.js";
+import AbstractSmartComponent from "./abstract-smart-component.js";
 
 const Preposition = {
   TO: `to`,
@@ -100,7 +100,11 @@ const createEventEditorTemplate = (point) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        ${point ? (`
+        <button class="event__reset-btn" type="reset">Delete</button>
+        `) : (`
         <button class="event__reset-btn" type="reset">Cancel</button>
+        `)}
         ${point ? (`
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
