@@ -34,18 +34,21 @@ export default class EventController {
     const eventEditorRollupButtonClickHandler = () => {
       replace(this._eventComponent, this._eventEditorComponent);
       document.removeEventListener(`keydown`, documentEscPressHandler);
+      this._eventEditorComponent.removeFlatpicr();
       this._editMode = false;
     };
 
     const eventResetButtonClickHandler = () => {
       replace(this._eventComponent, this._eventEditorComponent);
       document.removeEventListener(`keydown`, documentEscPressHandler);
+      this._eventEditorComponent.removeFlatpicr();
       this._editMode = false;
     };
 
     const eventSaveButtonClickHandler = () => {
       replace(this._eventComponent, this._eventEditorComponent);
       document.removeEventListener(`keydown`, documentEscPressHandler);
+      this._eventEditorComponent.removeFlatpicr();
       this._editMode = false;
     };
 
@@ -53,6 +56,7 @@ export default class EventController {
       if (evt.key === `Escape` || evt.key === `Esc`) {
         replace(this._eventComponent, this._eventEditorComponent);
         document.removeEventListener(`keydown`, documentEscPressHandler);
+        this._eventEditorComponent.removeFlatpicr();
         this._editMode = false;
       }
     };
@@ -81,6 +85,8 @@ export default class EventController {
     this._eventEditorComponent.setAddToFavoriteButtonClickHandler(addToFavoriteButtonClickHandler);
     this._eventEditorComponent.setEventTypeInputChangeHandler(eventTypeInputChangeHandler);
     this._eventEditorComponent.setEventDestinationInputChangeHandler(eventDestinationInputChangeHandler);
+    this._eventEditorComponent.setStartTimeInputFocusHandler();
+    this._eventEditorComponent.setEndTimeInputFocusHandler();
 
     if (this._editMode === true) {
       render(this._container, this._eventEditorComponent, `afterbegin`);

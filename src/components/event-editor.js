@@ -2,7 +2,9 @@
 import {capitalizeFirstLetter} from "../utils/common";
 import {transferTypes, activityTypes, cities} from "../mock/data";
 import {offersByType} from "../mock/offers";
-import AbstractSmartComponent from "./abstract-smart-component.js";
+import AbstractComponent from "./abstract-component";
+import flatpickr from "../../node_modules/flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const Preposition = {
   TO: `to`,
@@ -179,10 +181,11 @@ const createDestinationPhotoMarkup = (picture) => {
   `);
 };
 
-export default class EventEditor extends AbstractSmartComponent {
+export default class EventEditor extends AbstractComponent {
   constructor(point) {
     super();
     this._point = point;
+    this._flatpicr = null;
   }
 
   getTemplate() {
@@ -212,4 +215,38 @@ export default class EventEditor extends AbstractSmartComponent {
   setEventDestinationInputChangeHandler(cb) {
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, cb);
   }
+
+  setStartTimeInputFocusHandler() {
+    const inputFrom = this.getElement().querySelector(`#event-start-time-1`);
+    const startTimeInputFocusHandler = () => {
+      this.removeFlatpicr();
+      this._flatpicr = flatpickr(inputFrom, {
+        enableTime: true,
+        dateFormat: `Y-m-d H:i`,
+      });
+    };
+    inputFrom.addEventListener(`focus`, startTimeInputFocusHandler);
+  }
+
+  setEndTimeInputChangeHandler(cb) {
+    const inputTo = this.getElement().querySelector(`#event-end-time-1`);
+    const endTimeInputFocusHandler = () => {
+      this.removeFlatpicr();
+      this._flatpicr = flatpickr(inputTo, {
+        enableTime: true,
+        dateFormat: `Y-m-d H:i`,
+      });
+    };
+    inputTo.addEventListener(`focus`, endTimeInputFocusHandler);
+    inputTo.addEventListener(`change`, cb);
+  }
+
+  removeFlatpicr() {
+    if (this._flatpicr) {
+      this._flatpicr.destroy();
+      this._flatpicr = null;
+    }
+  }
 }
+
+
