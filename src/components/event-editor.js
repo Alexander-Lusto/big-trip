@@ -5,19 +5,16 @@ import {offersByType} from "../mock/offers";
 import AbstractComponent from "./abstract-component";
 import flatpickr from "../../node_modules/flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+import moment from "../../node_modules/moment";
 
 const Preposition = {
   TO: `to`,
   IN: `in`,
 };
+const DEFAULT_MOMENT_DATE_FORMAT = `DD/MM/YY HH:MM`;
+const DEFAULT_FLATPICR_DATE_FORMAT = `d/m/y H:i`;
 const DEFAULT_TYPE = `flight`;
-const DEFAULT_DATE = {
-  year: new Date().getFullYear() >= 2100 ? new Date().getFullYear().toString().slice(1) : new Date().getFullYear().toString().slice(2),
-  month: new Date().getMonth() < 9 ? `0` + (new Date().getMonth() + 1) : new Date().getMonth() + 1,
-  date: new Date().getDate() < 10 ? `0` + new Date().getDate() : new Date().getDate(),
-  hour: new Date().getHours() < 10 ? `0` + new Date().getHours() : new Date().getHours(),
-  minute: new Date().getMinutes() < 10 ? `0` + new Date().getMinutes() : new Date().getMinutes(),
-};
+const DEFAULT_DATE = moment().format(DEFAULT_MOMENT_DATE_FORMAT);
 
 const createEventEditorTemplate = (point) => {
   const type = point ? point.type : DEFAULT_TYPE;
@@ -26,21 +23,8 @@ const createEventEditorTemplate = (point) => {
   const offers = point ? point.offers : offersByType.find((el) => el.type === DEFAULT_TYPE).offers;
   const price = point ? point.price : ``;
   const isFavorite = point ? point.isFavorite : ``;
-
-  const dateTo = point ? {
-    year: point.dateTo.getFullYear(),
-    month: point.dateTo.getMonth() < 9 ? `0` + (point.dateTo.getMonth() + 1) : point.dateTo.getMonth() + 1,
-    date: point.dateTo.getDate() < 10 ? `0` + point.dateTo.getDate() : point.dateTo.getDate(),
-    hour: point.dateTo.getHours() < 10 ? `0` + point.dateTo.getHours() : point.dateTo.getHours(),
-    minute: point.dateTo.getMinutes() < 10 ? `0` + point.dateTo.getMinutes() : point.dateTo.getMinutes(),
-  } : DEFAULT_DATE;
-  const dateFrom = point ? {
-    year: point.dateFrom.getFullYear(),
-    month: point.dateFrom.getMonth() < 9 ? `0` + (point.dateFrom.getMonth() + 1) : point.dateFrom.getMonth() + 1,
-    date: point.dateFrom.getDate() < 10 ? `0` + point.dateFrom.getDate() : point.dateFrom.getDate(),
-    hour: point.dateFrom.getHours() < 10 ? `0` + point.dateFrom.getHours() : point.dateFrom.getHours(),
-    minute: point.dateFrom.getMinutes() < 10 ? `0` + point.dateFrom.getMinutes() : point.dateFrom.getMinutes(),
-  } : DEFAULT_DATE;
+  const dateFrom = point ? moment(point.dateFrom).format(DEFAULT_MOMENT_DATE_FORMAT) : DEFAULT_DATE;
+  const dateTo = point ? moment(point.dateTo).format(DEFAULT_MOMENT_DATE_FORMAT) : DEFAULT_DATE;
 
   return (`
     <form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -82,14 +66,14 @@ const createEventEditorTemplate = (point) => {
             From
           </label>
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-            value="${dateFrom.year}-${dateFrom.month}-${dateFrom.date} ${dateFrom.hour}:${dateFrom.minute}"
+            value="${dateFrom}"
           >
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
           <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
-            value="${dateTo.year}-${dateTo.month}-${dateTo.date} ${dateTo.hour}:${dateTo.minute}"
+            value="${dateTo}"
           >
         </div>
 
@@ -222,23 +206,22 @@ export default class EventEditor extends AbstractComponent {
       this.removeFlatpicr();
       this._flatpicr = flatpickr(inputFrom, {
         enableTime: true,
-        dateFormat: `Y-m-d H:i`,
+        dateFormat: DEFAULT_FLATPICR_DATE_FORMAT,
       });
     };
     inputFrom.addEventListener(`focus`, startTimeInputFocusHandler);
   }
 
-  setEndTimeInputChangeHandler(cb) {
+  setEndTimeInputFocusHandler() {
     const inputTo = this.getElement().querySelector(`#event-end-time-1`);
     const endTimeInputFocusHandler = () => {
       this.removeFlatpicr();
       this._flatpicr = flatpickr(inputTo, {
         enableTime: true,
-        dateFormat: `Y-m-d H:i`,
+        dateFormat: DEFAULT_FLATPICR_DATE_FORMAT,
       });
     };
     inputTo.addEventListener(`focus`, endTimeInputFocusHandler);
-    inputTo.addEventListener(`change`, cb);
   }
 
   removeFlatpicr() {
@@ -248,5 +231,3 @@ export default class EventEditor extends AbstractComponent {
     }
   }
 }
-
-
