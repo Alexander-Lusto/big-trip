@@ -2,41 +2,29 @@
 import {capitalizeFirstLetter} from "../utils/common";
 import {transferTypes, activityTypes, cities} from "../mock/data";
 import {offersByType} from "../mock/offers";
-import AbstractComponent from "./abstract-component.js";
+import AbstractComponent from "./abstract-component";
+import flatpickr from "../../node_modules/flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+import moment from "../../node_modules/moment";
 
 const Preposition = {
   TO: `to`,
   IN: `in`,
 };
+const DEFAULT_MOMENT_DATE_FORMAT = `DD/MM/YY HH:MM`;
+const DEFAULT_FLATPICR_DATE_FORMAT = `d/m/y H:i`;
 const DEFAULT_TYPE = `flight`;
-const DEFAULT_DATE = {
-  year: new Date().getFullYear() >= 2100 ? new Date().getFullYear().toString().slice(1) : new Date().getFullYear().toString().slice(2),
-  month: new Date().getMonth() < 9 ? `0` + (new Date().getMonth() + 1) : new Date().getMonth() + 1,
-  date: new Date().getDate() < 10 ? `0` + new Date().getDate() : new Date().getDate(),
-  hour: new Date().getHours() < 10 ? `0` + new Date().getHours() : new Date().getHours(),
-  minute: new Date().getMinutes() < 10 ? `0` + new Date().getMinutes() : new Date().getMinutes(),
-};
+const DEFAULT_DATE = moment().format(DEFAULT_MOMENT_DATE_FORMAT);
 
 const createEventEditorTemplate = (point) => {
   const type = point ? point.type : DEFAULT_TYPE;
   const destination = point ? point.destination : ``;
+  const allOffers = offersByType.find((it) => it.type === type).offers;
   const offers = point ? point.offers : offersByType.find((el) => el.type === DEFAULT_TYPE).offers;
   const price = point ? point.price : ``;
-
-  const dateTo = point ? {
-    year: point.dateTo.getFullYear(),
-    month: point.dateTo.getMonth() < 9 ? `0` + (point.dateTo.getMonth() + 1) : point.dateTo.getMonth() + 1,
-    date: point.dateTo.getDate() < 10 ? `0` + point.dateTo.getDate() : point.dateTo.getDate(),
-    hour: point.dateTo.getHours() < 10 ? `0` + point.dateTo.getHours() : point.dateTo.getHours(),
-    minute: point.dateTo.getMinutes() < 10 ? `0` + point.dateTo.getMinutes() : point.dateTo.getMinutes(),
-  } : DEFAULT_DATE;
-  const dateFrom = point ? {
-    year: point.dateFrom.getFullYear(),
-    month: point.dateFrom.getMonth() < 9 ? `0` + (point.dateFrom.getMonth() + 1) : point.dateFrom.getMonth() + 1,
-    date: point.dateFrom.getDate() < 10 ? `0` + point.dateFrom.getDate() : point.dateFrom.getDate(),
-    hour: point.dateFrom.getHours() < 10 ? `0` + point.dateFrom.getHours() : point.dateFrom.getHours(),
-    minute: point.dateFrom.getMinutes() < 10 ? `0` + point.dateFrom.getMinutes() : point.dateFrom.getMinutes(),
-  } : DEFAULT_DATE;
+  const isFavorite = point ? point.isFavorite : ``;
+  const dateFrom = point ? moment(point.dateFrom).format(DEFAULT_MOMENT_DATE_FORMAT) : DEFAULT_DATE;
+  const dateTo = point ? moment(point.dateTo).format(DEFAULT_MOMENT_DATE_FORMAT) : DEFAULT_DATE;
 
   return (`
     <form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -78,14 +66,14 @@ const createEventEditorTemplate = (point) => {
             From
           </label>
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time"
-            value="${dateFrom.year}-${dateFrom.month}-${dateFrom.date} ${dateFrom.hour}:${dateFrom.minute}"
+            value="${dateFrom}"
           >
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
           <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time"
-            value="${dateTo.year}-${dateTo.month}-${dateTo.date} ${dateTo.hour}:${dateTo.minute}"
+            value="${dateTo}"
           >
         </div>
 
@@ -98,17 +86,33 @@ const createEventEditorTemplate = (point) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+        ${point ? (`
+        <button class="event__reset-btn" type="reset">Delete</button>
+        `) : (`
         <button class="event__reset-btn" type="reset">Cancel</button>
+        `)}
+        ${point ? (`
+        <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
+        <label class="event__favorite-btn" for="event-favorite-1">
+          <span class="visually-hidden">Add to favorite</span>
+          <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
+            <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+          </svg>
+        </label>
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
+        `) : ``}
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${offers.map((el) => createOfferMarkup(el)).join(`\n`)}
+            ${allOffers.map((offer) => createOfferMarkup(offer, offer === offers.find((checkedOffer) => checkedOffer === offer))).join(`\n`)}
           </div>
         </section>
-        ${ destination ? (`
+        ${destination ? (`
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">
@@ -165,6 +169,7 @@ export default class EventEditor extends AbstractComponent {
   constructor(point) {
     super();
     this._point = point;
+    this._flatpicr = null;
   }
 
   getTemplate() {
@@ -177,5 +182,52 @@ export default class EventEditor extends AbstractComponent {
 
   setResetButtonClickHandler(cb) {
     this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, cb);
+  }
+
+  setRollupButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
+  }
+
+  setAddToFavoriteButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, cb);
+  }
+
+  setEventTypeInputChangeHandler(cb) {
+    this.getElement().querySelectorAll(`.event__type-input`).forEach((el) => el.addEventListener(`change`, cb));
+  }
+
+  setEventDestinationInputChangeHandler(cb) {
+    this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, cb);
+  }
+
+  setStartTimeInputFocusHandler() {
+    const inputFrom = this.getElement().querySelector(`#event-start-time-1`);
+    const startTimeInputFocusHandler = () => {
+      this.removeFlatpicr();
+      this._flatpicr = flatpickr(inputFrom, {
+        enableTime: true,
+        dateFormat: DEFAULT_FLATPICR_DATE_FORMAT,
+      });
+    };
+    inputFrom.addEventListener(`focus`, startTimeInputFocusHandler);
+  }
+
+  setEndTimeInputFocusHandler() {
+    const inputTo = this.getElement().querySelector(`#event-end-time-1`);
+    const endTimeInputFocusHandler = () => {
+      this.removeFlatpicr();
+      this._flatpicr = flatpickr(inputTo, {
+        enableTime: true,
+        dateFormat: DEFAULT_FLATPICR_DATE_FORMAT,
+      });
+    };
+    inputTo.addEventListener(`focus`, endTimeInputFocusHandler);
+  }
+
+  removeFlatpicr() {
+    if (this._flatpicr) {
+      this._flatpicr.destroy();
+      this._flatpicr = null;
+    }
   }
 }

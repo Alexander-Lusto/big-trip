@@ -6,8 +6,9 @@ import {generatePoints} from "./mock/generatePoints";
 import {render} from "./utils/render";
 import TripController from "./сontrollers/trip-controller";
 
-const EVENTS_COUNT = 20;
+const EVENTS_COUNT = 10;
 const events = generatePoints(EVENTS_COUNT);
+console.log(events);
 
 // Отрисовка
 const tripMain = document.querySelector(`.trip-main`);

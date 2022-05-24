@@ -2,7 +2,7 @@
 import {types} from "./data";
 import {destinations} from "./destinations";
 import {offersByType} from "./offers";
-import {getRandomArrayItem, getRandomIntegerNumber, getRandomDate} from "../utils/common";
+import {getRandomArrayItem, getRandomIntegerNumber, getRandomDate, shuffleArray} from "../utils/common";
 
 let previousDate = null;
 
@@ -12,6 +12,8 @@ const generatePoint = () => {
   const dateTo = getRandomDate(dateFrom);
   previousDate = dateTo;
   const type = getRandomArrayItem(types);
+  const allOffers = offersByType.find((it) => it.type === type).offers;
+  const checkedOffers = shuffleArray(allOffers).slice(0, getRandomIntegerNumber(0, allOffers.length - 1));
 
   return {
     price: getRandomIntegerNumber(20, 600),
@@ -19,7 +21,7 @@ const generatePoint = () => {
     dateTo,
     destination: getRandomArrayItem(destinations),
     isFavorite: Math.random() > 0.8 ? true : false,
-    offers: offersByType.find((it) => it.type === type).offers,
+    offers: checkedOffers,
     type
   };
 };

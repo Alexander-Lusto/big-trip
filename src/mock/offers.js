@@ -38,7 +38,7 @@ const generateOffers = (offersMax) => {
   for (let i = 0; i < types.length; i++) {
     const offer = {
       type: types[i],
-      offers: shuffleArray(offersOptions).slice(0, getRandomIntegerNumber(0, offersMax)),
+      offers: shuffleArray(offersOptions).slice(0, getRandomIntegerNumber(2, offersMax)),
     };
     offers.push(offer);
   }
