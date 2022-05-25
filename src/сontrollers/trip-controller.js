@@ -6,8 +6,10 @@ import {render, remove} from "../utils/render";
 import {SortType} from "../utils/const";
 
 export default class TripController {
-  constructor(container) {
+  constructor(container, pointsModel) {
     this._container = container;
+    this._pointsModel = pointsModel;
+    this._points = [];
 
     this._noEventsComponent = new NoEventsComponent();
     this._sortingComponent = new SortingComponent();
@@ -17,8 +19,9 @@ export default class TripController {
     this._onViewChange = this._onViewChange.bind(this);
   }
 
-  render(points) {
+  render() {
     const container = this._container;
+    const points = this._pointsModel.getPoints();
     this._points = points;
 
     if (points.length === 0) {
