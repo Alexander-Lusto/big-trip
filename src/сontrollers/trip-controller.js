@@ -12,11 +12,14 @@ export default class TripController {
     this._points = [];
 
     this._noEventsComponent = new NoEventsComponent();
-    this._sortingComponent = new SortingComponent();
+    this._sortingComponent = null;
     this._tripDaysComponent = null;
     this._eventControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
+
+    this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
   render() {
@@ -29,40 +32,44 @@ export default class TripController {
       return;
     }
 
+    this._renderSorting(container, points);
+    this._renderDays(points);
+    this._renderEvents(points);
+  }
+
+  _renderSorting(container, points) {
+    this._sortingComponent = new SortingComponent();
     this._sortingComponent.setSortTypeChangeHandler((evt) => {
       const sortType = evt.target.dataset.sortType;
       let sortedPoints = points.slice();
 
       switch (sortType) {
         case SortType.EVENT: {
-          this.renderDays(sortedPoints);
-          this.renderEvents(sortedPoints);
+          this._renderDays(sortedPoints);
+          this._renderEvents(sortedPoints);
           break;
         }
 
         case SortType.PRICE: {
           sortedPoints = sortedPoints.sort((a, b) => b.price - a.price);
-          this.renderDays();
-          this.renderEvents(sortedPoints);
+          this._renderDays();
+          this._renderEvents(sortedPoints);
           break;
         }
 
         case SortType.TIME: {
           sortedPoints = sortedPoints.sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
-          this.renderDays();
-          this.renderEvents(sortedPoints);
+          this._renderDays();
+          this._renderEvents(sortedPoints);
           break;
         }
       }
       this._sortingComponent.sortType = sortType;
     });
     render(container, this._sortingComponent);
-
-    this.renderDays(points);
-    this.renderEvents(points);
   }
 
-  renderDays(points) {
+  _renderDays(points) {
     if (this._tripDaysComponent) {
       remove(this._tripDaysComponent);
     }
@@ -70,18 +77,18 @@ export default class TripController {
     render(this._container, this._tripDaysComponent);
   }
 
-  renderEvent(container, point) {
+  _renderEvent(container, point) {
     const eventController = new EventController(container, this._onDataChange, this._onViewChange);
     this._eventControllers.push(eventController);
     eventController.render(point);
   }
 
-  renderEvents(points) {
+  _renderEvents(points) {
     const days = this._tripDaysComponent.getElement().querySelectorAll(`.trip-events__list`);
 
     if (days.length === 1) { // если у нас один день (режим сортировки) то рендерим всё в него
       points.forEach((point) => {
-        this.renderEvent(days[0], point);
+        this._renderEvent(days[0], point);
       });
       return;
     }
@@ -89,12 +96,12 @@ export default class TripController {
     let j = 0;
     for (let i = 0; i < points.length; i++) {
       if (i === 0) { // всегда рендерим первый элемент в первый день
-        this.renderEvent(days[0], points[0]);
+        this._renderEvent(days[0], points[0]);
       } else if (points[i].dateFrom.getDate() > points[i - 1].dateFrom.getDate()) {
         j++; // если (дата элемента > даты предыдущего элемента) рендерим в другой день
-        this.renderEvent(days[j], points[i]);
+        this._renderEvent(days[j], points[i]);
       } else { // иначе рендерим в этот же день
-        this.renderEvent(days[j], points[i]);
+        this._renderEvent(days[j], points[i]);
       }
     }
   }
@@ -111,6 +118,22 @@ export default class TripController {
 
   _onViewChange() {
     this._eventControllers.forEach((el) => el.setDefaultView());
+  }
+
+  _removePoints() {
+    this._eventControllers.forEach((controller) => controller.destroy());
+    this._eventControllers = [];
+  }
+
+  _removeSorting() {
+    remove(this._sortingComponent);
+    this._sortingComponent = null;
+  }
+
+  _onFilterChange() {
+    this._removePoints();
+    this._removeSorting();
+    this.render();
   }
 }
 

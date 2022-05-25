@@ -33,6 +33,13 @@ const SortType = {
   TIME: `time`,
   PRICE: `price`,
 };
-const sortTypes = [SortType.EVENT, SortType.TIME, SortType.PRICE];
+const sortTypes = Object.values(SortType);
 
-export {monthes, sortTypes, SortType};
+const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`,
+};
+const filters = Object.values(FilterType);
+
+export {monthes, sortTypes, SortType, filters, FilterType};

@@ -1,16 +1,16 @@
 import TripInfoComponent from "./components/trip-info";
 import TripCostComponent from "./components/trip-cost";
 import MenuComponent from "./components/menu";
-import FilterComponent from "./components/filters";
 import {generatePoints} from "./mock/generatePoints";
 import {render} from "./utils/render";
 import TripController from "./сontrollers/trip-controller";
 import PointsModel from "./models/points";
+import FilterController from "./сontrollers/filter-controller";
 
 const EVENTS_COUNT = 10;
 const pointsModel = new PointsModel();
 pointsModel.setPoints(generatePoints(EVENTS_COUNT));
-console.log(pointsModel.getPoints());
+// console.log(pointsModel.getPoints());
 
 // Отрисовка
 const tripMain = document.querySelector(`.trip-main`);
@@ -24,10 +24,13 @@ render(tripMainInfo, tripCostComponent);
 
 
 const menuComponent = new MenuComponent();
-const filterComponent = new FilterComponent();
-const [tripMainControlsFirstTitle, tripMainControlsSecondTitle] = tripMain.querySelectorAll(`.trip-main__trip-controls h2`);
+// const filterComponent = new FilterComponent();
+
+const tripComtrols = tripMain.querySelector(`.trip-controls`);
+const tripMainControlsFirstTitle = tripMain.querySelector(`.trip-main__trip-controls h2`);
 render(tripMainControlsFirstTitle, menuComponent, `afterend`);
-render(tripMainControlsSecondTitle, filterComponent, `afterend`);
+const filterController = new FilterController(tripComtrols, pointsModel);
+filterController.render();
 
 const tripEvents = document.querySelector(`.trip-events`);
 const tripController = new TripController(tripEvents, pointsModel);

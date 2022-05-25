@@ -13,6 +13,8 @@ export default class EventController {
     this._eventComponent = null;
     this._eventEditorComponent = null;
     this._editMode = false;
+
+    this._documentEscPressHandler = null;
   }
 
   render(point) {
@@ -26,39 +28,30 @@ export default class EventController {
 
     const eventRollupButtonClickHandler = () => {
       replace(this._eventEditorComponent, this._eventComponent);
-      document.addEventListener(`keydown`, documentEscPressHandler);
+      document.addEventListener(`keydown`, this._documentEscPressHandler);
       this._onViewChange();
       this._editMode = true;
     };
 
     const eventEditorRollupButtonClickHandler = () => {
       replace(this._eventComponent, this._eventEditorComponent);
-      document.removeEventListener(`keydown`, documentEscPressHandler);
+      document.removeEventListener(`keydown`, this._documentEscPressHandler);
       this._eventEditorComponent.removeFlatpicr();
       this._editMode = false;
     };
 
     const eventResetButtonClickHandler = () => {
       replace(this._eventComponent, this._eventEditorComponent);
-      document.removeEventListener(`keydown`, documentEscPressHandler);
+      document.removeEventListener(`keydown`, this._documentEscPressHandler);
       this._eventEditorComponent.removeFlatpicr();
       this._editMode = false;
     };
 
     const eventSaveButtonClickHandler = () => {
       replace(this._eventComponent, this._eventEditorComponent);
-      document.removeEventListener(`keydown`, documentEscPressHandler);
+      document.removeEventListener(`keydown`, this._documentEscPressHandler);
       this._eventEditorComponent.removeFlatpicr();
       this._editMode = false;
-    };
-
-    const documentEscPressHandler = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        replace(this._eventComponent, this._eventEditorComponent);
-        document.removeEventListener(`keydown`, documentEscPressHandler);
-        this._eventEditorComponent.removeFlatpicr();
-        this._editMode = false;
-      }
     };
 
     const addToFavoriteButtonClickHandler = () => {
@@ -76,6 +69,15 @@ export default class EventController {
       const destination = destinations.find((it) => it.name === evt.target.value);
       const newPoint = Object.assign({}, point, {destination});
       this._onDataChange(point, newPoint);
+    };
+
+    this._documentEscPressHandler = (evt) => {
+      if (evt.key === `Escape` || evt.key === `Esc`) {
+        replace(this._eventComponent, this._eventEditorComponent);
+        document.removeEventListener(`keydown`, this._documentEscPressHandler);
+        this._eventEditorComponent.removeFlatpicr();
+        this._editMode = false;
+      }
     };
 
     this._eventComponent.setRollupButtonClickHandler(eventRollupButtonClickHandler);
@@ -100,5 +102,11 @@ export default class EventController {
       replace(this._eventComponent, this._eventEditorComponent);
       this._editMode = false;
     }
+  }
+
+  destroy() {
+    remove(this._eventComponent);
+    remove(this._eventEditorComponent);
+    document.removeEventListener(`keydown`, this._documentEscPressHandler);
   }
 }
