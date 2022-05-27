@@ -16,7 +16,7 @@ const generatePoint = () => {
   const checkedOffers = shuffleArray(allOffers).slice(0, getRandomIntegerNumber(0, allOffers.length - 1));
 
   return {
-    id: Math.random() / Math.random() / Math.random() / Math.random(),
+    id: Math.random(),
     price: getRandomIntegerNumber(20, 600),
     dateFrom,
     dateTo,

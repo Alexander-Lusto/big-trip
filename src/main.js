@@ -10,7 +10,7 @@ import FilterController from "./сontrollers/filter-controller";
 const EVENTS_COUNT = 10;
 const pointsModel = new PointsModel();
 pointsModel.setPoints(generatePoints(EVENTS_COUNT));
-// console.log(pointsModel.getPoints());
+console.log(pointsModel.getPoints());
 
 // Отрисовка
 const tripMain = document.querySelector(`.trip-main`);

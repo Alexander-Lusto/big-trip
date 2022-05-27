@@ -41,10 +41,10 @@ export default class EventController {
     };
 
     const eventResetButtonClickHandler = () => {
-      replace(this._eventComponent, this._eventEditorComponent);
       document.removeEventListener(`keydown`, this._documentEscPressHandler);
       this._eventEditorComponent.removeFlatpicr();
       this._editMode = false;
+      this._onDataChange(point, null);
     };
 
     const eventSaveButtonClickHandler = () => {
@@ -81,8 +81,8 @@ export default class EventController {
     };
 
     this._eventComponent.setRollupButtonClickHandler(eventRollupButtonClickHandler);
-    this._eventEditorComponent.setSaveButtonClickHandler(eventResetButtonClickHandler);
-    this._eventEditorComponent.setResetButtonClickHandler(eventSaveButtonClickHandler);
+    this._eventEditorComponent.setSaveButtonClickHandler(eventSaveButtonClickHandler);
+    this._eventEditorComponent.setResetButtonClickHandler(eventResetButtonClickHandler);
     this._eventEditorComponent.setRollupButtonClickHandler(eventEditorRollupButtonClickHandler);
     this._eventEditorComponent.setAddToFavoriteButtonClickHandler(addToFavoriteButtonClickHandler);
     this._eventEditorComponent.setEventTypeInputChangeHandler(eventTypeInputChangeHandler);

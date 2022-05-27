@@ -10,6 +10,7 @@ export default class TripController {
     this._container = container;
     this._pointsModel = pointsModel;
     this._points = [];
+    this._sortType = SortType.EVENT;
 
     this._noEventsComponent = new NoEventsComponent();
     this._sortingComponent = null;
@@ -32,16 +33,17 @@ export default class TripController {
       return;
     }
 
-    this._renderSorting(container, points);
+    this._renderSorting(container);
     this._renderDays(points);
     this._renderEvents(points);
   }
 
-  _renderSorting(container, points) {
+  _renderSorting(container) {
     this._sortingComponent = new SortingComponent();
+
     this._sortingComponent.setSortTypeChangeHandler((evt) => {
       const sortType = evt.target.dataset.sortType;
-      let sortedPoints = points.slice();
+      let sortedPoints = this._points.slice();
 
       switch (sortType) {
         case SortType.EVENT: {
@@ -107,13 +109,24 @@ export default class TripController {
   }
 
   _onDataChange(oldData, newData) {
-    const index = this._points.findIndex((it) => it === oldData);
+    const index = this._points.findIndex((it) => it.id === oldData.id);
     if (index === -1) {
       return;
     }
 
-    this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
-    this._eventControllers[index].render(this._points[index]);
+    if (newData === null) { // DELETING
+      this._eventControllers[index].destroy();
+      this._pointsModel.removePoint(oldData.id);
+      this._eventControllers = [].concat(this._eventControllers.slice(0, index), this._eventControllers.slice(index + 1));
+
+      this._points = this._pointsModel.getPoints();
+      this._rerenderBoard();
+      console.log(this._points);
+    } else {
+      this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
+      this._eventControllers[index].render(this._points[index]);
+    }
+
   }
 
   _onViewChange() {
@@ -134,6 +147,34 @@ export default class TripController {
     this._removePoints();
     this._removeSorting();
     this.render();
+  }
+
+  _rerenderBoard() {
+    const sortType = this._sortingComponent.sortType;
+    this._removePoints();
+
+    let sortedPoints = this._points.slice();
+    switch (sortType) {
+      case SortType.EVENT: {
+        this._renderDays(sortedPoints);
+        this._renderEvents(sortedPoints);
+        break;
+      }
+
+      case SortType.PRICE: {
+        sortedPoints = sortedPoints.sort((a, b) => b.price - a.price);
+        this._renderDays();
+        this._renderEvents(sortedPoints);
+        break;
+      }
+
+      case SortType.TIME: {
+        sortedPoints = sortedPoints.sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
+        this._renderDays();
+        this._renderEvents(sortedPoints);
+        break;
+      }
+    }
   }
 }
 
