@@ -4,21 +4,44 @@ import NoEventsComponent from "../components/no-events";
 import EventController from "./event-controller";
 import {render, remove} from "../utils/render";
 import {SortType} from "../utils/const";
+import {FilterType} from "../utils/const";
+import {types} from "../mock/data";
+
+const createDefaultPoint = () => {
+  return {
+    id: Math.random(),
+    price: ``,
+    dateFrom: new Date(),
+    dateTo: new Date(),
+    destination: ``,
+    isFavorite: null,
+    offers: [],
+    type: types[0],
+  };
+};
+
+const DEFAULT_FILTER = FilterType.EVERYTHING;
+const DEFAULT_SORT_TYPE = SortType.EVENT;
 
 export default class TripController {
   constructor(container, pointsModel) {
     this._container = container;
     this._pointsModel = pointsModel;
-    this._points = [];
-    this._sortType = SortType.EVENT;
 
-    this._noEventsComponent = new NoEventsComponent();
+    this._points = [];
+    this._eventControllers = [];
+
+    this._sortType = SortType.EVENT;
+    this._creationMode = false;
+
     this._sortingComponent = null;
     this._tripDaysComponent = null;
-    this._eventControllers = [];
+    this._newEventButton = null;
+
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
+    this._onNewEventButtonClick = this._onNewEventButtonClick.bind(this);
 
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
@@ -29,6 +52,7 @@ export default class TripController {
     this._points = points;
 
     if (points.length === 0) {
+      this._noEventsComponent = new NoEventsComponent();
       render(container, this._noEventsComponent);
       return;
     }
@@ -38,14 +62,28 @@ export default class TripController {
     this._renderEvents(points);
   }
 
+  _onNewEventButtonClick() {
+    if (this._creationMode) {
+      return;
+    }
+    this._toDefaultBoardSettings();
+    this._onDataChange(null, createDefaultPoint());
+    this._newEventButton.turnOnDisabledMode();
+  }
+
+  addNewEventButtonComponent(newEventButton) {
+    this._newEventButton = newEventButton;
+  }
+
   _renderSorting(container) {
     this._sortingComponent = new SortingComponent();
 
     this._sortingComponent.setSortTypeChangeHandler((evt) => {
-      const sortType = evt.target.dataset.sortType;
+
+      this._sortType = evt.target.dataset.sortType;
       let sortedPoints = this._points.slice();
 
-      switch (sortType) {
+      switch (this._sortType) {
         case SortType.EVENT: {
           this._renderDays(sortedPoints);
           this._renderEvents(sortedPoints);
@@ -66,7 +104,7 @@ export default class TripController {
           break;
         }
       }
-      this._sortingComponent.sortType = sortType;
+      this._sortingComponent.sortType = this._sortType;
     });
     render(container, this._sortingComponent);
   }
@@ -97,10 +135,17 @@ export default class TripController {
 
     let j = 0;
     for (let i = 0; i < points.length; i++) {
+
       if (i === 0) { // всегда рендерим первый элемент в первый день
         this._renderEvent(days[0], points[0]);
-      } else if (points[i].dateFrom.getDate() > points[i - 1].dateFrom.getDate()) {
-        j++; // если (дата элемента > даты предыдущего элемента) рендерим в другой день
+        continue;
+      }
+
+      const isDateHigher = points[i].dateFrom.getDate() > points[i - 1].dateFrom.getDate();
+      const isMonthHigher = points[i].dateFrom.getMonth() > points[i - 1].dateFrom.getMonth();
+
+      if (isDateHigher || isMonthHigher) { // если (дата элемента > даты предыдущего элемента) рендерим в другой день
+        j++;
         this._renderEvent(days[j], points[i]);
       } else { // иначе рендерим в этот же день
         this._renderEvent(days[j], points[i]);
@@ -109,52 +154,93 @@ export default class TripController {
   }
 
   _onDataChange(oldData, newData) {
-    const index = this._points.findIndex((it) => it.id === oldData.id);
-    if (index === -1) {
-      return;
-    }
+    const index = this._points.findIndex((it) => it === oldData);
 
     if (newData === null) { // DELETING
-      this._eventControllers[index].destroy();
       this._pointsModel.removePoint(oldData.id);
+      this._points = this._pointsModel.getPoints();
+
+      this._eventControllers[index].destroy();
       this._eventControllers = [].concat(this._eventControllers.slice(0, index), this._eventControllers.slice(index + 1));
 
-      this._points = this._pointsModel.getPoints();
+      this._creationMode = false;
+      this._newEventButton.turnOffDisabledMode();
       this._rerenderBoard();
-      console.log(this._points);
-    } else {
-      this._points = [].concat(this._points.slice(0, index), newData, this._points.slice(index + 1));
-      this._eventControllers[index].render(this._points[index]);
+    } else if (oldData === null) { // ADDING
+
+      this._creationMode = true;
+      this._pointsModel.addPoint(newData);
+      this._points = this._pointsModel.getPoints();
+
+      const eventController = new EventController(this._container, this._onDataChange, this._onViewChange);
+      this._eventControllers.push(eventController);
+      eventController.render(newData, true);
+    } else { // UPDATING
+      this._pointsModel.updatePoint(oldData.id, newData);
+      this._points = this._pointsModel.getPoints();
+
+      if (this._eventControllers[index]._editMode === true) { // редактирование
+        this._eventControllers[index].render(this._points[index]);
+      } else { // выход из редактирования
+        this._rerenderBoard();
+        this._creationMode = false;
+        this._newEventButton.turnOffDisabledMode();
+      }
     }
 
   }
 
-  _onViewChange() {
+  _onViewChange() { // закрываем открытые формы редактирования
     this._eventControllers.forEach((el) => el.setDefaultView());
   }
 
   _removePoints() {
     this._eventControllers.forEach((controller) => controller.destroy());
     this._eventControllers = [];
+    if (this._tripDaysComponent) {
+      remove(this._tripDaysComponent);
+    }
   }
 
   _removeSorting() {
-    remove(this._sortingComponent);
-    this._sortingComponent = null;
+    if (this._sortingComponent) {
+      remove(this._sortingComponent);
+      this._sortingComponent = null;
+    }
+  }
+
+  _removeNoEvents() {
+    if (this._noEventsComponent) {
+      remove(this._noEventsComponent);
+      this._noEventsComponent = null;
+    }
   }
 
   _onFilterChange() {
-    this._removePoints();
     this._removeSorting();
+    this._removeNoEvents();
+    this._removePoints();
     this.render();
   }
 
   _rerenderBoard() {
-    const sortType = this._sortingComponent.sortType;
+    if (this._points.length === 0) {
+      this.render();
+      return;
+    }
+
+    if (this._points.length === 1 && !this._sortingComponent) { // проверка чтобы не рендерить лишнюю сортировку
+      this._removePoints();
+      this.render();
+      return;
+    }
+
+
+    this._sortType = this._sortingComponent.sortType;
     this._removePoints();
 
     let sortedPoints = this._points.slice();
-    switch (sortType) {
+    switch (this._sortType) {
       case SortType.EVENT: {
         this._renderDays(sortedPoints);
         this._renderEvents(sortedPoints);
@@ -174,6 +260,24 @@ export default class TripController {
         this._renderEvents(sortedPoints);
         break;
       }
+    }
+  }
+
+  _toDefaultBoardSettings() {
+    this._onViewChange(); // закрываем открытые формы редактирования
+
+    if (this._noEventsComponent) {
+      this._removeNoEvents();
+    }
+
+    if (this._sortType !== DEFAULT_SORT_TYPE) { // если сортировка не дефолтная, сбрасываем и перерисовываем сортировку и доску
+      this._removeSorting();
+      this._renderSorting(this._container);
+      this._rerenderBoard();
+    }
+
+    if (this._pointsModel.getFilter() !== DEFAULT_FILTER) { // если фильтр не дефолтный, перерисовываем фильтр и доску
+      this._pointsModel.setFilter(DEFAULT_FILTER);
     }
   }
 }

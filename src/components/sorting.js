@@ -5,11 +5,11 @@ import {sortTypes, SortType} from "../utils/const";
 
 const DEFAULT_SORT_TYPE = SortType.EVENT;
 
-const createSortingTemplate = () => {
+const createSortingTemplate = (sortType) => {
   return (`
     <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
       <span class="trip-sort__item  trip-sort__item--day">Day</span>
-      ${sortTypes.map((el) => createSortMarkup(el, el === DEFAULT_SORT_TYPE ? true : false)).join(`\n`)}
+      ${sortTypes.map((el) => createSortMarkup(el, el === sortType ? true : false)).join(`\n`)}
       <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
     </form>
   `);
@@ -35,7 +35,7 @@ export default class Sorting extends AbstractComponent {
   }
 
   getTemplate() {
-    return createSortingTemplate();
+    return createSortingTemplate(this._sortType);
   }
 
   get sortType() {

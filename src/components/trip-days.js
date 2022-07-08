@@ -19,7 +19,12 @@ const createTripDaysTemplate = (points) => {
   const filteredPoints = sortedPoints.filter((el, i, arr) => {
     if (i === 0) { // всегда возвращаем первый элемент
       return true;
-    } else if (el.dateFrom.getDate() > arr[i - 1].dateFrom.getDate()) { // если дата элемента > даты предыдущего элемента
+    }
+
+    const isDateHigher = el.dateFrom.getDate() > arr[i - 1].dateFrom.getDate();
+    const isMonthHigher = el.dateFrom.getMonth() > arr[i - 1].dateFrom.getMonth();
+
+    if (isDateHigher || isMonthHigher) { // если дата элемента > даты предыдущего элемента
       return true;
     } else { // иначе пропускаем этот элемент
       return false;
