@@ -8,7 +8,7 @@ let previousDate = null;
 
 // Data-generation
 const generatePoint = () => {
-  const dateFrom = previousDate ? getRandomDate(previousDate) : getRandomDate();
+  const dateFrom = previousDate ? getRandomDate(previousDate) : getRandomDate(new Date(2022, 4, 20));
   const dateTo = getRandomDate(dateFrom);
   previousDate = dateTo;
   const type = getRandomArrayItem(types);
@@ -16,6 +16,7 @@ const generatePoint = () => {
   const checkedOffers = shuffleArray(allOffers).slice(0, getRandomIntegerNumber(0, allOffers.length - 1));
 
   return {
+    id: Math.random(),
     price: getRandomIntegerNumber(20, 600),
     dateFrom,
     dateTo,

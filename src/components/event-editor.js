@@ -14,17 +14,14 @@ const Preposition = {
 const DEFAULT_MOMENT_DATE_FORMAT = `DD/MM/YY HH:MM`;
 const DEFAULT_FLATPICR_DATE_FORMAT = `d/m/y H:i`;
 const DEFAULT_TYPE = `flight`;
-const DEFAULT_DATE = moment().format(DEFAULT_MOMENT_DATE_FORMAT);
 
 const createEventEditorTemplate = (point) => {
-  const type = point ? point.type : DEFAULT_TYPE;
-  const destination = point ? point.destination : ``;
+  const {type, destination, price, isFavorite} = point;
+
   const allOffers = offersByType.find((it) => it.type === type).offers;
   const offers = point ? point.offers : offersByType.find((el) => el.type === DEFAULT_TYPE).offers;
-  const price = point ? point.price : ``;
-  const isFavorite = point ? point.isFavorite : ``;
-  const dateFrom = point ? moment(point.dateFrom).format(DEFAULT_MOMENT_DATE_FORMAT) : DEFAULT_DATE;
-  const dateTo = point ? moment(point.dateTo).format(DEFAULT_MOMENT_DATE_FORMAT) : DEFAULT_DATE;
+  const dateFrom = moment(point.dateFrom).format(DEFAULT_MOMENT_DATE_FORMAT);
+  const dateTo = moment(point.dateTo).format(DEFAULT_MOMENT_DATE_FORMAT);
 
   return (`
     <form class="trip-events__item  event  event--edit" action="#" method="post">
@@ -55,6 +52,7 @@ const createEventEditorTemplate = (point) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
             value="${destination ? destination.name : ``}" list="destination-list-1"
+            pattern="${cities.map((el) => (el)).join(`|`)}"
           >
           <datalist id="destination-list-1">
             ${cities.map((el) => createDestinationOptionMarkup(el)).join(`\n`)}
@@ -82,16 +80,16 @@ const createEventEditorTemplate = (point) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        ${point ? (`
+        ${isFavorite !== null ? (`
         <button class="event__reset-btn" type="reset">Delete</button>
         `) : (`
         <button class="event__reset-btn" type="reset">Cancel</button>
         `)}
-        ${point ? (`
+        ${isFavorite !== null ? (`
         <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
         <label class="event__favorite-btn" for="event-favorite-1">
           <span class="visually-hidden">Add to favorite</span>
@@ -145,11 +143,12 @@ const createDestinationOptionMarkup = (city) => {
 };
 
 const createOfferMarkup = (offer, isChecked) => {
-  const array = offer.title.split(` `);
-  const id = array.length > 3 ? array.slice(array.length - 2).join(` `) : array[array.length - 1];
+  const array = offer.title.toLowerCase().split(` `);
+  const id = array.slice(array.length - 2).join(`-`);
+  const name = array.join(`-`);
   return (`
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="event-offer-${id}" ${isChecked ? `checked` : ``}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}-1" type="checkbox" name="${name}" ${isChecked ? `checked` : ``}>
       <label class="event__offer-label" for="event-offer-${id}-1">
         <span class="event__offer-title">${offer.title}</span>
         &plus;
@@ -169,7 +168,8 @@ export default class EventEditor extends AbstractComponent {
   constructor(point) {
     super();
     this._point = point;
-    this._flatpicr = null;
+    this._flatpicrStart = null;
+    this._flatpicrEnd = null;
   }
 
   getTemplate() {
@@ -200,34 +200,55 @@ export default class EventEditor extends AbstractComponent {
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, cb);
   }
 
-  setStartTimeInputFocusHandler() {
+  setStartTimeInputChangeHandler(cb) {
     const inputFrom = this.getElement().querySelector(`#event-start-time-1`);
     const startTimeInputFocusHandler = () => {
       this.removeFlatpicr();
-      this._flatpicr = flatpickr(inputFrom, {
+      this._flatpicrStart = flatpickr(inputFrom, {
         enableTime: true,
         dateFormat: DEFAULT_FLATPICR_DATE_FORMAT,
+        [`time_24hr`]: true,
+        minDate: `today`,
       });
     };
     inputFrom.addEventListener(`focus`, startTimeInputFocusHandler);
+    inputFrom.addEventListener(`change`, cb);
   }
 
-  setEndTimeInputFocusHandler() {
+  setEndTimeInputChangeHandler(cb) {
     const inputTo = this.getElement().querySelector(`#event-end-time-1`);
     const endTimeInputFocusHandler = () => {
       this.removeFlatpicr();
-      this._flatpicr = flatpickr(inputTo, {
+      this._flatpicrEnd = flatpickr(inputTo, {
         enableTime: true,
         dateFormat: DEFAULT_FLATPICR_DATE_FORMAT,
+        [`time_24hr`]: true,
+        minDate: moment(this._point.dateFrom).format(DEFAULT_MOMENT_DATE_FORMAT),
       });
     };
     inputTo.addEventListener(`focus`, endTimeInputFocusHandler);
+    inputTo.addEventListener(`change`, cb);
+  }
+
+  setPriceInputChangeHandler(cb) {
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`change`, cb);
+  }
+
+  setOffersChangeHandler(cb) {
+    this.getElement().querySelectorAll(`.event__offer-checkbox`).forEach((el) => {
+      el.addEventListener(`change`, cb);
+    });
   }
 
   removeFlatpicr() {
-    if (this._flatpicr) {
-      this._flatpicr.destroy();
-      this._flatpicr = null;
+    if (this._flatpicrStart) {
+      this._flatpicrStart.destroy();
+      this._flatpicrStart = null;
+    }
+
+    if (this._flatpicrEnd) {
+      this._flatpicrEnd.destroy();
+      this._flatpicrEnd = null;
     }
   }
 }

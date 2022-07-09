@@ -1,14 +1,11 @@
 // фильтры
+import {filters, FilterType} from "../utils/const";
 import {capitalizeFirstLetter} from "../utils/common";
 import AbstractComponent from "./abstract-component.js";
 
-const Filter = {
-  EVERYTHING: `everything`,
-  FUTURE: `future`,
-  PAST: `past`,
-};
-const DEFAULT_FILTER = Filter.EVERYTHING;
-const filters = [Filter.EVERYTHING, Filter.FUTURE, Filter.PAST];
+
+const DEFAULT_FILTER = FilterType.EVERYTHING;
+
 
 const createFiltersTemplate = () => {
   return (`
@@ -31,5 +28,9 @@ const createFilterMarkup = (filterName, isChecked) => {
 export default class Filters extends AbstractComponent {
   getTemplate() {
     return createFiltersTemplate();
+  }
+
+  setFilterChangeHandler(cb) {
+    this.getElement().querySelectorAll(`.trip-filters__filter-input `).forEach((el) => el.addEventListener(`change`, cb));
   }
 }
