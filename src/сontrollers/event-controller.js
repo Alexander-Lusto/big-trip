@@ -6,6 +6,7 @@ import {destinations} from "../mock/destinations";
 import moment from "../../node_modules/moment";
 
 const DEFAULT_MOMENT_DATE_FORMAT = `DD/MM/YY HH:MM`;
+const CUSTOM_VALIDITY_MESSAGE = `The destination must be selected from the list!`;
 
 export default class EventController {
   constructor(container, onDataChange, onViewChange) {
@@ -16,6 +17,7 @@ export default class EventController {
     this._eventStartTime = null;
     this._eventEndTime = null;
     this._offers = null;
+    this._isInvalid = false;
 
     this._eventComponent = null;
     this._eventEditorComponent = null;
@@ -79,6 +81,9 @@ export default class EventController {
     };
 
     const eventSaveButtonClickHandler = (evt) => {
+      if (this._isInvalid) {
+        return;
+      }
       evt.preventDefault();
       document.removeEventListener(`keydown`, this._documentEscPressHandler);
       this._eventEditorComponent.removeFlatpicr();
@@ -86,6 +91,7 @@ export default class EventController {
       this._editMode = false;
       this._creationMode = false;
       const isFavorite = (point.isFavorite === null) ? (point.isFavorite = false) : point.isFavorite; // null => false для отрисовки блоков favorite и rollup button
+
 
       const newPoint = Object.assign({}, point, {offers: this._offers}, {isFavorite}, {dateFrom: this._eventStartTime}, {dateTo: this._eventEndTime});
       this._onDataChange(point, newPoint);
@@ -106,6 +112,14 @@ export default class EventController {
 
     const eventDestinationInputChangeHandler = (evt) => {
       const destination = destinations.find((it) => it.name === evt.target.value);
+      if (!destination) {
+        this._isInvalid = true;
+        evt.target.setCustomValidity(CUSTOM_VALIDITY_MESSAGE);
+        return;
+      } else {
+        this._isInvalid = false;
+      }
+
       const newPoint = Object.assign({}, point, {offers: this._offers}, {destination}, {dateFrom: this._eventStartTime}, {dateTo: this._eventEndTime});
       this._onDataChange(point, newPoint);
     };
