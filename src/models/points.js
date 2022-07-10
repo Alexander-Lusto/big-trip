@@ -22,10 +22,15 @@ const getPointsByFilter = (points, filter) => {
 export default class Points {
   constructor() {
     this._points = [];
+    this._allPoints = [];
 
     this._filterChangeHandlers = [];
     this._dataChangeHandlers = [];
     this._filter = FilterType.EVERYTHING;
+  }
+
+  getAllPoints() {
+    return this._points;
   }
 
   getPoints() {
