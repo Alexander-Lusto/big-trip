@@ -53,6 +53,7 @@ const createEventEditorTemplate = (point) => {
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"
             value="${destination ? destination.name : ``}" list="destination-list-1"
             pattern="${cities.map((el) => (el)).join(`|`)}"
+            required
           >
           <datalist id="destination-list-1">
             ${cities.map((el) => createDestinationOptionMarkup(el)).join(`\n`)}
@@ -80,7 +81,7 @@ const createEventEditorTemplate = (point) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}" min="0" required>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

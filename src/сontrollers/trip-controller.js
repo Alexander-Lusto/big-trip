@@ -23,6 +23,7 @@ const createDefaultPoint = () => {
 const DEFAULT_FILTER = FilterType.EVERYTHING;
 const DEFAULT_SORT_TYPE = SortType.EVENT;
 
+
 export default class TripController {
   constructor(container, pointsModel) {
     this._container = container;
@@ -33,6 +34,7 @@ export default class TripController {
 
     this._sortType = SortType.EVENT;
     this._creationMode = false;
+    this._statisticMode = false;
 
     this._sortingComponent = null;
     this._tripDaysComponent = null;
@@ -62,8 +64,27 @@ export default class TripController {
     this._renderEvents(points);
   }
 
+  hide() {
+
+    this._statisticMode = true;
+    this._container.classList.add(`hidden`);
+  }
+
+  show() {
+    this._statisticMode = false;
+    this._onViewChange(); // закрываем открытые формы редактирования
+
+    if (this._sortType !== DEFAULT_SORT_TYPE) { // если сортировка не дефолтная, сбрасываем и перерисовываем сортировку и доску
+      this._removeSorting();
+      this._renderSorting(this._container);
+      this._rerenderBoard();
+    }
+
+    this._container.classList.remove(`hidden`);
+  }
+
   _onNewEventButtonClick() {
-    if (this._creationMode) {
+    if (this._creationMode || this._statisticMode) {
       return;
     }
     this._toDefaultBoardSettings();

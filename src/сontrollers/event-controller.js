@@ -17,7 +17,9 @@ export default class EventController {
     this._eventStartTime = null;
     this._eventEndTime = null;
     this._offers = null;
-    this._isInvalid = false;
+
+    this._isDestinationInvalid = false;
+    this._isPriceInvalid = false;
 
     this._eventComponent = null;
     this._eventEditorComponent = null;
@@ -34,6 +36,8 @@ export default class EventController {
 
   render(point, isCreating = false) {
     if (isCreating) {
+      this._isDestinationInvalid = true;
+      this._isPriceInvalid = true;
       this._creationMode = true;
       this._editMode = true;
       document.addEventListener(`keydown`, this._documentEscPressHandler);
@@ -81,7 +85,7 @@ export default class EventController {
     };
 
     const eventSaveButtonClickHandler = (evt) => {
-      if (this._isInvalid) {
+      if (this._isDestinationInvalid || this._isPriceInvalid) {
         return;
       }
       evt.preventDefault();
@@ -113,11 +117,11 @@ export default class EventController {
     const eventDestinationInputChangeHandler = (evt) => {
       const destination = destinations.find((it) => it.name === evt.target.value);
       if (!destination) {
-        this._isInvalid = true;
+        this._isDestinationInvalid = true;
         evt.target.setCustomValidity(CUSTOM_VALIDITY_MESSAGE);
         return;
       } else {
-        this._isInvalid = false;
+        this._isDestinationInvalid = false;
       }
 
       const newPoint = Object.assign({}, point, {offers: this._offers}, {destination}, {dateFrom: this._eventStartTime}, {dateTo: this._eventEndTime});
@@ -125,6 +129,16 @@ export default class EventController {
     };
 
     const priceInputChangeHandler = (evt) => {
+      const price = Number(evt.target.value);
+
+      if (price < 0) {
+        this._isPriceInvalid = true;
+        evt.target.setCustomValidity(`Price must not be less than zero!`);
+        return;
+      } else {
+        this._isPriceInvalid = false;
+      }
+
       const newPoint = Object.assign({}, point, {price: Number(evt.target.value)}, {dateFrom: this._eventStartTime}, {dateTo: this._eventEndTime});
       this._onDataChange(point, newPoint);
     };
